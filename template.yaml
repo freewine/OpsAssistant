@@ -51,12 +51,12 @@ Resources:
   #       - AdministratorAccess
   #   Metadata:
   #     Dockerfile: Dockerfile
-  #     DockerContext: ./ec2
+  #     DockerContext: ./code/ec2
   #     DockerTag: OpsAssistant-v1
   WafFunction:
     Type: AWS::Serverless::Function # More info about Function Resource: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#awsserverlessfunction
     Properties:
-      CodeUri: waf/
+      CodeUri: code/waf/
       Handler: app.lambda_handler
       Runtime: python3.12
       Architectures:
@@ -76,7 +76,7 @@ Resources:
   GuarddutyFunction:
     Type: AWS::Serverless::Function # More info about Function Resource: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#awsserverlessfunction
     Properties:
-      CodeUri: guardduty/
+      CodeUri: code/guardduty/
       Handler: app.lambda_handler
       Runtime: python3.12
       Architectures:
