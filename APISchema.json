@@ -1,0 +1,81 @@
+{
+  "openapi": "3.1.0",
+  "info": {
+    "title": "Retrieves AWS services logs, such as WAF logs, GuardDuty findings",
+    "description": "Retrieves AWS services logs from start_time to end_time, such as WAF logs, GuardDuty logs, etc.",
+    "version": "v1.0.0"
+  },
+  "servers": [
+    {
+      "url": "https://xxxxxxxx.execute-api.us-west-2.amazonaws.com/Stage/tools"
+    }
+  ],
+  "paths": {
+    "/waf": {
+      "post": {
+        "description": "Retrieves AWS WAF logs from start_time to end_time, need to set start_time and end_time as request body",
+        "operationId": "RetrieveWAFLogs",
+        "requestBody": {
+          "description": "Request payload",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Payload"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successfully processed"
+          }
+        }
+      }
+    },
+    "/guardduty": {
+      "post": {
+        "description": "Retrieve AWS GuardDuty finding from start_time to end_time, need to set start_time and end_time as request body",
+        "operationId": "RetrieveGuardDutyFindings",
+        "requestBody": {
+          "description": "Request payload",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Payload"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successfully processed"
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "Payload": {
+        "title": "API request payload",
+        "type": "object",
+        "properties": {
+          "start_time": {
+            "type": "string",
+            "format": "date-time",
+            "example": "2024-06-23 00:00:00"
+          },
+          "end_time": {
+            "type": "string",
+            "format": "date-time",
+            "example": "2024-06-24 23:59:59"
+          }
+        },
+        "required": [
+          "start_time",
+          "end_time"
+        ]
+      }
+    }
+  }
+}
