@@ -12,7 +12,7 @@ def lambda_handler(event, context):
     parameters = json.loads(event["body"])
     start_time_str = parameters['start_time']
     end_time_str = parameters['end_time']
-    severity = parameters['severity'] or 'INFORMATIONAL'
+    severity = parameters.get('severity', 'INFORMATIONAL')
 
     # 将字符串转换为 datetime 对象
     start_time_obj = datetime.strptime(start_time_str, '%Y-%m-%d %H:%M:%S').replace(tzinfo=tz.tzutc())

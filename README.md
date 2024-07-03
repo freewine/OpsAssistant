@@ -78,7 +78,7 @@ OpsAssistant$ sam build --use-container
 
 The SAM CLI installs dependencies defined in `requirements.txt`, creates a deployment package, and saves it in the `.aws-sam/build` folder.
 
-The SAM CLI can also emulate your application's API. Use the `sam local start-api` to run the API locally on port 3000. `-n` option for JSON file containing values for Lambda function's environment variables.
+The SAM CLI can also emulate your application's API. Use the `sam local start-api` to run the API locally on port 3000. `-n` option to specify JSON file containing values for Lambda function's environment variables.
 
 ```bash
 OpsAssistant$ sam local start-api -n locals.json
