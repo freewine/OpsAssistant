@@ -1,7 +1,7 @@
 {
   "body": "{\"query\": \"m6i.xlarge linux price\"}",
-  "resource": "/tools/ec2",
-  "path": "/tools/ec2",
+  "resource": "/agent/ec2",
+  "path": "/agent/ec2",
   "httpMethod": "GET",
   "isBase64Encoded": false,
   "queryStringParameters": {

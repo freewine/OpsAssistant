@@ -19,7 +19,13 @@
 
 ### 1.4 查询CloudTrail事件
 
-查询近一个月创建EC2的事件
+CloudTrail event的查询计划采用Text2SQL方式，但event事件类型种类繁多，Text2SQL效果不理想，预计要配合RAG技术。
+
+注：CloudTrail lake 目前已经支持prompt to SQL query，还在preview状态
+
+示例：
+
+- 查询近一个月创建EC2的事件
 
 ### 1.5 告警分析
 
@@ -65,3 +71,9 @@
 1. 直接调用服务API
 2. 读取S3/CloudWatch log的日志进行分析
 3. 数据写入S3，构建数据湖，基于Athena进行分析。利用大模型Text2SQL。
+
+## TODOs
+
+1. 通过EventBridge触发生成每日的安全/日报，并存储到S3或者发送到邮箱
+2. Lambda权限明细化
+3.

@@ -30,7 +30,7 @@ def lambda_handler(event, context):
         queryString='fields @timestamp, @message | sort @timestamp desc | limit 1000'
     )
 
-    print(query_result)
+    # print(query_result)
     query_id = query_result['queryId']
 
     while True:
@@ -39,11 +39,21 @@ def lambda_handler(event, context):
         )
         if response['status'] in ['Complete', 'Failed', 'Cancelled', 'Timeout', 'Unknown']:
             break
-        time.sleep(0.2)
+        time.sleep(0.1)
+
+    # format results
+    results = []
+    for log_event in response['results']:
+        result = json.loads(log_event[1]['value'])
+        result['timestamp'] = log_event[0]['value']
+        results.append(result)
 
     return {
         "statusCode": 200,
+        'headers': {
+            'Content-Type': 'application/json'
+        },
         "body": json.dumps({
-            "Results": response['results']
+            "Results": results
         })
     }

@@ -247,3 +247,4 @@ $RECYCLE.BIN/
 .venv
 locals.json
 samconfig.toml
+.local

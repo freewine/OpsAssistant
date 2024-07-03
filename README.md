@@ -1,15 +1,47 @@
 # OpsAssistant
 
+OpsAssistant is a GenAI chatbot built with Amazon Bedrick and Dify, aimed to retrive and analyze AWS service metrics, logs, findings, and get insights.  It also support to generate Daily/Weekly/Monthly report automatically, and can be retrieval easily.
+
+Supported services:
+
+- WAF logs
+- GuardDuty findings
+- Inspector findings
+- CloudTrail (in progress)
+
+More service data retriveling is on going.
+
+## Architecture
+
+![](assets/images/architecture.png)
+
+## Code Structure
+
 This project contains source code and supporting files for a serverless application that you can deploy with the SAM CLI. It includes the following files and folders.
 
-- waf,guardduty,ec2 - Code for the application's Lambda function.
-- events - Invocation events that you can use to invoke the function.
-- tests - Unit tests for the application code.
-- template.yaml - A template that defines the application's AWS resources.
+```
+.
+├── README.md
+├── assets
+│   └── images
+├── code                # Code for the application's Lambda function.
+│   ├── cloudtrail
+│   ├── ec2
+│   ├── guardduty
+│   ├── inspector
+│   └── waf
+├── doc
+├── events              # Invocation events that you can use to invoke API gateway.
+├── template.yaml	# A template that defines the application's AWS resources.
+└── tests		# Unit tests for the application code.
+    ├── integration
+    └── unit
+
+```
 
 The application uses several AWS resources, including Lambda functions and an API Gateway API. These resources are defined in the `template.yaml` file in this project. You can update the template to add AWS resources through the same deployment process that updates your application code.
 
-## Deploy the sample application
+## Deploy the application
 
 The Serverless Application Model Command Line Interface (SAM CLI) is an extension of the AWS CLI that adds functionality for building and testing Lambda applications. It uses Docker to run your functions in an Amazon Linux environment that matches Lambda. It can also emulate your application's build environment and API.
 
@@ -26,7 +58,7 @@ sam build --use-container
 sam deploy --guided
 ```
 
-The first command will build the source of your application. The second command will package and deploy your application to AWS, with a series of prompts:
+The first command will build the source of your application. The second command will package and deploy your application to AWS, with a series of prompts, such as
 
 * **Stack Name**: The name of the stack to deploy to CloudFormation. This should be unique to your account and region, and a good starting point would be something matching your project name.
 * **AWS Region**: The AWS region you want to deploy your app to.
@@ -44,22 +76,12 @@ Build your application with the `sam build --use-container` command.
 OpsAssistant$ sam build --use-container
 ```
 
-The SAM CLI installs dependencies defined in `ec2/requirements.txt`, creates a deployment package, and saves it in the `.aws-sam/build` folder.
+The SAM CLI installs dependencies defined in `requirements.txt`, creates a deployment package, and saves it in the `.aws-sam/build` folder.
 
-Test a single function by invoking it directly with a test event. An event is a JSON document that represents the input that the function receives from the event source. Test events are included in the `events` folder in this project.
-
-Run functions locally and invoke them with the `sam local invoke` command.
+The SAM CLI can also emulate your application's API. Use the `sam local start-api` to run the API locally on port 3000. `-n` option for JSON file containing values for Lambda function's environment variables.
 
 ```bash
-OpsAssistant$ sam local invoke WafFunction --event events/waf_event.json --env-vars locals.json
-OpsAssistant$ sam local invoke GuarddutyFunction --event events/guardduty_event.json --env-vars locals.json
-OpsAssistant$ sam local invoke EC2Function --event events/ec2_event.json --env-vars locals.json
-```
-
-The SAM CLI can also emulate your application's API. Use the `sam local start-api` to run the API locally on port 3000.
-
-```bash
-OpsAssistant$ sam local start-api
+OpsAssistant$ sam local start-api -n locals.json
 OpsAssistant$ curl http://localhost:3000/
 ```
 
@@ -74,9 +96,13 @@ The SAM CLI reads the application template to determine the API's routes and the
             Method: get
 ```
 
-## Add a resource to your application
+Test a single api by invoking it directly with a test event. An event is a JSON document that represents the input that the function receives from the event source. Test events are included in the `events` folder in this project. Test the api locally using curl as follow:
 
-The application template uses AWS Serverless Application Model (AWS SAM) to define application resources. AWS SAM is an extension of AWS CloudFormation with a simpler syntax for configuring common serverless application resources such as functions, triggers, and APIs. For resources not included in [the SAM specification](https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md), you can use standard [AWS CloudFormation](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-template-resource-type-ref.html) resource types.
+```bash
+OpsAssistant$ curl --location 'http://localhost:3000/tools/waf' --header 'Content-Type: application/json' --data @events/waf_event.json
+OpsAssistant$ curl --location 'http://localhost:3000/tools/guardduty' --header 'Content-Type: application/json' --data @events/guardduty_event.json
+OpsAssistant$ curl --location 'http://localhost:3000/tools/inspector' --header 'Content-Type: application/json' --data @events/inspector_event.json
+```
 
 ## Fetch, tail, and filter Lambda function logs
 
@@ -85,34 +111,17 @@ To simplify troubleshooting, SAM CLI has a command called `sam logs`. `sam logs`
 `NOTE`: This command works for all AWS Lambda functions; not just the ones you deploy using SAM.
 
 ```bash
-OpsAssistant$ sam logs -n OpsAssistantFunction --stack-name "OpsAssistant" --tail
+OpsAssistant$ sam logs -n WafFunction --stack-name "OpsAssistant" --tail
 ```
 
 You can find more information and examples about filtering Lambda function logs in the [SAM CLI Documentation](https://docs.aws.amazon.com/serverless-application-model/latest/developerguide/serverless-sam-cli-logging.html).
 
-## Tests
-
-Tests are defined in the `tests` folder in this project. Use PIP to install the test dependencies and run tests.
-
-```bash
-OpsAssistant$ pip install -r tests/requirements.txt --user
-# unit test
-OpsAssistant$ python -m pytest tests/unit -v
-# integration test, requiring deploying the stack first.
-# Create the env variable AWS_SAM_STACK_NAME with the name of the stack we are testing
-OpsAssistant$ AWS_SAM_STACK_NAME="OpsAssistant" python -m pytest tests/integration -v
-```
-
 ## Cleanup
 
-To delete the sample application that you created, use the AWS CLI. Assuming you used your project name for the stack name, you can run the following:
+To delete the application that you created, use the AWS CLI. Assuming you used your project name for the stack name, you can run the following:
 
 ```bash
 sam delete --stack-name "OpsAssistant"
 ```
 
 ## Resources
-
-See the [AWS SAM developer guide](https://docs.aws.amazon.com/serverless-application-model/latest/developerguide/what-is-sam.html) for an introduction to SAM specification, the SAM CLI, and serverless application concepts.
-
-Next, you can use AWS Serverless Application Repository to deploy ready to use Apps that go beyond Ops Assistant and learn how authors developed their applications: [AWS Serverless Application Repository main page](https://aws.amazon.com/serverless/serverlessrepo/)

@@ -52,6 +52,26 @@
           }
         }
       }
+    },
+    "/inspector": {
+      "post": {
+        "description": "Retrieve AWS inspector findings from start_time to end_time",
+        "operationId": "RetrieveGuardDutyFindings",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Payload"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successfully processed"
+          }
+        }
+      }
     }
   },
   "components": {
