@@ -1,19 +1,23 @@
 # OpsAssistant
 
-OpsAssistant is a GenAI chatbot built with Amazon Bedrick and Dify, aimed to retrive and analyze AWS service metrics, logs, findings, and get insights.  It also support to generate Daily/Weekly/Monthly report automatically, and can be retrieval easily.
+OpsAssistant is a GenAI chatbot built with Amazon Bedrick and Dify, aimed to retrive and analyze AWS service metrics, logs, findings, and output insights.  It also support to generate Daily/Weekly/Monthly report automatically, and can be retrieval easily.
 
 Supported services:
 
 - WAF logs
 - GuardDuty findings
 - Inspector findings
+- Daily/Weekly/Monthly security reports
+- IoT Device Defender
 - CloudTrail (in progress)
+- Code review(in progress)
+- Document review(in progress)
 
 More service data retriveling is on going.
 
 ## Architecture
 
-![](assets/images/architecture.png)
+![](assets/images/architecture.jpg)
 
 ## Code Structure
 
@@ -102,6 +106,13 @@ Test a single api by invoking it directly with a test event. An event is a JSON 
 OpsAssistant$ curl --location 'http://localhost:3000/tools/waf' --header 'Content-Type: application/json' --data @events/waf_event.json
 OpsAssistant$ curl --location 'http://localhost:3000/tools/guardduty' --header 'Content-Type: application/json' --data @events/guardduty_event.json
 OpsAssistant$ curl --location 'http://localhost:3000/tools/inspector' --header 'Content-Type: application/json' --data @events/inspector_event.json
+OpsAssistant$ curl --location 'http://localhost:3000/tools/iotsecurity' --header 'Content-Type: application/json' --data @events/iot_security_event.json
+```
+
+Run functions locally and invoke them with the `sam local invoke` command.
+
+```bash
+OpsAssistant$ sam local invoke ReportsFunction --event events/report_event.json --env-vars locals.json
 ```
 
 ## Fetch, tail, and filter Lambda function logs

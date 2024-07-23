@@ -2,7 +2,7 @@
   "openapi": "3.1.0",
   "info": {
     "title": "Retrieves AWS services logs, such as WAF logs, GuardDuty findings",
-    "description": "Retrieves AWS services logs from start_time to end_time, such as WAF logs, GuardDuty logs, etc.",
+    "description": "Retrieves AWS services logs from start_time to end_time, such as WAF logs, GuardDuty logs, IoT device defender etc.",
     "version": "v1.0.0"
   },
   "servers": [
@@ -57,6 +57,26 @@
       "post": {
         "description": "Retrieve AWS inspector findings from start_time to end_time",
         "operationId": "RetrieveInspectorFindings",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Payload"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successfully processed"
+          }
+        }
+      }
+    },
+    "/iotsecurity": {
+      "post": {
+        "description": "Retrieve AWS IoT device defender audit findings from start_time to end_time",
+        "operationId": "RetrieveIoTAuditFindings",
         "requestBody": {
           "content": {
             "application/json": {

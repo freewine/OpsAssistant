@@ -76,4 +76,24 @@ CloudTrail event的查询计划采用Text2SQL方式，但event事件类型种类
 
 1. 通过EventBridge触发生成每日的安全/日报，并存储到S3或者发送到邮箱
 2. Lambda权限明细化
-3.
+3. GenBI: Text2SQL 轻量级可视化
+4. CLI生成器，使用cli手册finetune一个模型
+
+Bedrock最小化权限
+
+```
+{
+"Version": "2012-10-17",
+"Statement": [
+    {
+    "Sid": "BedrockLeastPrivilege",
+    "Effect": "Allow",
+    "Action": [
+        "bedrock:InvokeModel",
+        "bedrock:InvokeModelWithResponseStream"
+    ],
+    "Resource": "arn:aws:bedrock:*::foundation-model/*"
+    }
+]
+}
+```

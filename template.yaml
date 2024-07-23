@@ -25,6 +25,9 @@ Parameters:
   AgentID:
     Type: String
     Description: Bedrock Agent ID
+  SNSTopicsARN:
+    Type: String
+    Description: SNS Topics ARN
 
 Resources:
   # EC2Function:
@@ -112,6 +115,74 @@ Resources:
           REGION: !Ref AWS::Region
       Policies:
         - AdministratorAccess  
+  IoTSecurityFunction:
+    Type: AWS::Serverless::Function 
+    Properties:
+      CodeUri: code/iotsecurity/
+      Handler: app.lambda_handler
+      Runtime: python3.12
+      Architectures:
+        - x86_64
+      Events:
+        OpsAssistant:
+          Type: Api # More info about API Event Source: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#api
+          Properties:
+            Path: /tools/iotsecurity
+            Method: post
+      Environment: # More info about Env Vars: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#environment-object
+        Variables:
+          REGION: !Ref AWS::Region
+      Policies:
+        - AdministratorAccess  
+  ReportsFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: code/reports/
+      Handler: generate_report.lambda_handler
+      Runtime: python3.12
+      Architectures:
+        - x86_64
+      Environment: # More info about Env Vars: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#environment-object
+        Variables:
+          SNS_TOPICS_ARN: !Ref SNSTopicsARN
+      Events:
+        SecurityReports:
+          Type: Schedule
+          Properties:
+            Schedule: cron(0 1 * * ? *)
+            Name: SecurityReports
+            Description: Schedule to generate daily reports
+            Enabled: True
+            Input:
+              '{
+                "time_range": "daily"
+              }'
+      Policies:
+        - AdministratorAccess  
+        - Statement:
+            - Sid: SNSPolicy
+              Effect: Allow
+              Action:
+                - sns:Publish
+              Resource:
+                - !Sub ${SNSTopicsARN}
+            - Sid: DynamoDBPolicy
+              Effect: Allow
+              Action:
+                - dynamodb:GetItem
+                - dynamodb:PutItem
+              Resource:
+                - !Sub arn:${AWS::Partition}:dynamodb:${AWS::Region}:${AWS::AccountId}:table/SecurityReportsTable
+  SecurityReportsTable:
+    Type: AWS::Serverless::SimpleTable
+    Properties:
+      TableName: SecurityReportsTable
+      PrimaryKey: 
+        Name: report_type
+        Type: String
+      Tags:
+        APP: OpsAssistant
+        ENV: PROD
 Outputs:
   # ServerlessRestApi is an implicit API created out of Events key under Serverless::Function
   # Find out more about other implicit resources you can reference within SAM

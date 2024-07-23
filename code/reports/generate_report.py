@@ -1,50 +1,54 @@
 import boto3
 import time
-import json
+import json, os
 from datetime import datetime, timedelta
 from dateutil.relativedelta import relativedelta
 from botocore.exceptions import ClientError
+from dateutil import tz
 
 query_num = 1000
 
-region = 'us-east-1'#'us-west-2' #
-logs_client = boto3.client('logs', region_name=region)
-bedrock_client = boto3.client('bedrock-runtime', region_name=region)
-ddb_client = boto3.client('dynamodb', region_name=region)
+waf_region = 'us-east-1'#'us-west-2' #
+logs_client = boto3.client('logs', region_name=waf_region)
+bedrock_client = boto3.client('bedrock-runtime')
+ddb_client = boto3.client('dynamodb')
+sns_client = boto3.client('sns')
+
+# 读取环境变量
+sns_topic_arn = os.environ.get('SNS_TOPICS_ARN')
+print(sns_topic_arn)
 
 # 日志组
-log_group_name = 'aws-waf-logs-game2048'
+log_group_name = 'aws-waf-logs-loghub'
 # 模型id
 model_id = "anthropic.claude-3-haiku-20240307-v1:0"
 # ddb表, 读写容量按需
-waf_daily_report_table_name = 'ops_assist_waf_daily_reports'
-waf_weekly_report_table_name = 'ops_assist_waf_weekly_reports'
-waf_monthly_report_table_name = 'ops_assist_waf_monthly_reports'
+report_table_name = 'SecurityReportsTable'
 
-time_range = 'daily'
-# time_range = 'weekly'
-# time_range = 'monthly'
+report_type = 'waf'
+report_period = 'daily'
+# report_period = 'weekly'
+# report_period = 'monthly'
 
 
 def lambda_handler(event, context):
     print(f"event: {event}")
-    time_range = event["time_range"]
-    waf_report(time_range)
+    report_period = event["report_period"]
+    waf_report(report_period)
 
     return {
         'statusCode': 200,
-        'body': json.dumps('Hello from Lambda!')
+        'body': json.dumps('Done!')
     }
 
-def waf_report(time_range):
+def waf_report(report_period):
     # 获取当前日期，格式%Y-%m-%d %H:%M:%S
     current_date = datetime.now()
-    if time_range == 'daily': # 前一天起止时间
+    if report_period == 'daily': # 前一天起止时间
         start_date = current_date - timedelta(days=1)
         start_date = start_date.replace(hour=0, minute=0, second=0, microsecond=0)
         end_date = start_date.replace(hour=23, minute=59, second=59, microsecond=999999)
-        waf_report_table_name = waf_daily_report_table_name
-    elif time_range == 'weekly':
+    elif report_period == 'weekly':
         start_of_this_week = current_date - timedelta(days=current_date.weekday())
         end_of_this_week = start_of_this_week + timedelta(days=6)
         # 前一周起止时间
@@ -52,19 +56,21 @@ def waf_report(time_range):
         end_date = end_of_this_week - timedelta(days=7)
         start_date = start_date.replace(hour=0, minute=0, second=0, microsecond=0)
         end_date = end_date.replace(hour=23, minute=59, second=59, microsecond=999999)
-        waf_report_table_name = waf_weekly_report_table_name
-    elif time_range == 'monthly':
+    elif report_period == 'monthly':
         # 计算上个月的第一天
         first_day_of_this_month = current_date.replace(day=1, hour=0, minute=0, second=0, microsecond=0)      
         start_date = first_day_of_this_month - relativedelta(months=1)
         # 计算上个月的最后一天
         end_date = first_day_of_this_month - relativedelta(microseconds=1)
-        waf_report_table_name = waf_monthly_report_table_name
     else:
-        print('time_range error')
+        print('report_period error')
         return None
         
     print('start_date: %s, end_date: %s' %(start_date, end_date))
+
+    # TMP
+    start_date = datetime.strptime('2024-06-23 00:00:00', '%Y-%m-%d %H:%M:%S').replace(tzinfo=tz.tzutc())
+    end_date = datetime.strptime('2024-06-23 23:59:59', '%Y-%m-%d %H:%M:%S').replace(tzinfo=tz.tzutc())
 
     # 设置初始查询起始时间
     start_query_time = int(start_date.timestamp()) * 1000
@@ -85,7 +91,7 @@ def waf_report(time_range):
             queryString='fields @timestamp, @message | sort @timestamp asc',
             limit=query_num
         )
-        # print('response: %s' %(response))
+        print('response: %s' %(response))
         
         # 获取查询结果
         while True:
@@ -130,7 +136,8 @@ def waf_report(time_range):
         index += 1
 
     date_str = start_date.strftime('%Y-%m-%d')
-    save_report(ddb_client, waf_report_table_name, date_str, ', '.join(total_reports))
+    save_report(ddb_client, report_table_name, date_str, ', '.join(total_reports))
+    send_report(', '.join(total_reports))
 
 # bedrock claude3 converse API
 def generate_conversation(bedrock_client, model_id, content):
@@ -177,8 +184,11 @@ def generate_conversation(bedrock_client, model_id, content):
 def save_report(ddb_client, table_name, start_date, report):
         # 构造要插入的项目
     item = {
+        'report_type': {'S': report_type},
+        'report_period': {'S': report_period},
         'start_date': {'S': start_date},
-        'report': {'S': report}
+        'report': {'S': report},
+        'timestamp': {'S': datetime.now().strftime("%Y-%m-%d %H:%M:%S")},
     }
 
     # 发送PutItem请求
@@ -210,6 +220,17 @@ def get_report(ddb_client, table_name, start_date):
             return response['Item']['report']['S']
         else:
             return None
-        
+
+def send_report(report):
+    try:
+        response = sns_client.publish(
+            TopicArn=sns_topic_arn,
+            Message=report,
+            Subject=f'{report_type} {report_period} report'
+        )
+        print(f"SNS response: {response}")
+    except ClientError as e:
+        print(f"Error: {e.response['Error']['Message']}")
+
 # if __name__ == "__main__":
-#     waf_report(time_range)
+#     waf_report(report_period)
