@@ -28,8 +28,33 @@ Parameters:
   SNSTopicsARN:
     Type: String
     Description: SNS Topics ARN
+  AuthToken:
+    Type: String
+    Description: API Gateway Authorizer Token
 
 Resources:
+  ToolsApi:
+    Type: AWS::Serverless::Api
+    Properties:
+      StageName: Prod
+      Auth:
+        DefaultAuthorizer: LambdaTokenAuthorizer
+        Authorizers:
+          LambdaTokenAuthorizer:
+            FunctionArn: !GetAtt AuthorizerFunction.Arn
+  AuthorizerFunction:
+    Type: AWS::Serverless::Function 
+    Properties:
+      CodeUri: code/authorizer/
+      Handler: app.lambda_handler
+      Runtime: python3.12
+      Architectures:
+        - x86_64
+      Environment: # More info about Env Vars: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#environment-object
+        Variables:
+          AUTH_TOKEN: !Ref AuthToken
+      Policies:
+        - AdministratorAccess  
   # EC2Function:
   #   Type: AWS::Serverless::Function # More info about Function Resource: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#awsserverlessfunction
   #   Properties:
@@ -68,6 +93,7 @@ Resources:
         OpsAssistant:
           Type: Api # More info about API Event Source: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#api
           Properties:
+            RestApiId: !Ref ToolsApi
             Path: /tools/waf
             Method: post
       Environment: # More info about Env Vars: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#environment-object
@@ -88,6 +114,7 @@ Resources:
         OpsAssistant:
           Type: Api # More info about API Event Source: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#api
           Properties:
+            RestApiId: !Ref ToolsApi
             Path: /tools/guardduty
             Method: post
       Environment: # More info about Env Vars: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#environment-object
@@ -108,6 +135,7 @@ Resources:
         OpsAssistant:
           Type: Api # More info about API Event Source: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#api
           Properties:
+            RestApiId: !Ref ToolsApi
             Path: /tools/inspector
             Method: post
       Environment: # More info about Env Vars: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#environment-object
@@ -127,6 +155,7 @@ Resources:
         OpsAssistant:
           Type: Api # More info about API Event Source: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#api
           Properties:
+            RestApiId: !Ref ToolsApi
             Path: /tools/iotsecurity
             Method: post
       Environment: # More info about Env Vars: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#environment-object
@@ -155,7 +184,8 @@ Resources:
             Enabled: True
             Input:
               '{
-                "time_range": "daily"
+                "report_type": "waf",
+                "report_period": "daily"
               }'
       Policies:
         - AdministratorAccess  
@@ -189,7 +219,7 @@ Outputs:
   # https://github.com/awslabs/serverless-application-model/blob/master/docs/internals/generated_resources.rst#api
   OpsAssistantApi:
     Description: "API Gateway endpoint URL for Prod stage for Ops Assistant function"
-    Value: !Sub "https://${ServerlessRestApi}.execute-api.${AWS::Region}.amazonaws.com/Prod/tools"
+    Value: !Sub "https://${ToolsApi}.execute-api.${AWS::Region}.amazonaws.com/Prod/tools"
   WafFunction:
     Description: "WAF Lambda Function ARN"
     Value: !GetAtt WafFunction.Arn

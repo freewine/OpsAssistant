@@ -226,7 +226,7 @@ def send_report(report):
         response = sns_client.publish(
             TopicArn=sns_topic_arn,
             Message=report,
-            Subject=f'{report_type} {report_period} report'
+            Subject=f'{report_type} {report_period} report'.upper()
         )
         print(f"SNS response: {response}")
     except ClientError as e:
