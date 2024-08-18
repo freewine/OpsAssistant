@@ -1,8 +1,8 @@
 {
   "openapi": "3.1.0",
   "info": {
-    "title": "Retrieves AWS services logs, such as WAF logs, GuardDuty findings",
-    "description": "Retrieves AWS services logs from start_time to end_time, such as WAF logs, GuardDuty logs, IoT device defender etc.",
+    "title": "APIs for retrieving AWS services logs or findings",
+    "description": "Retrieve AWS services logs or findings, such as GuardDuty findings, Inspector findings, IoT Device Defender Audit findings, etc.",
     "version": "v1.0.0"
   },
   "servers": [
@@ -13,7 +13,7 @@
   "paths": {
     "/waf": {
       "post": {
-        "description": "Retrieves AWS WAF logs from start_time to end_time, need to set start_time and end_time as request body",
+        "description": "Retrieves AWS WAF logs",
         "operationId": "RetrieveWAFLogs",
         "requestBody": {
           "description": "Request payload",
@@ -34,14 +34,38 @@
     },
     "/guardduty": {
       "post": {
-        "description": "Retrieve AWS GuardDuty finding from start_time to end_time, need to set start_time and end_time as request body",
+        "description": "Retrieve AWS GuardDuty findings",
         "operationId": "RetrieveGuardDutyFindings",
         "requestBody": {
           "description": "Request payload",
           "content": {
             "application/json": {
               "schema": {
-                "$ref": "#/components/schemas/Payload"
+                "title": "API request payload",
+                "type": "object",
+                "properties": {
+                  "start_time": {
+                    "type": "string",
+                    "format": "date-time",
+                    "example": "2024-06-23 00:00:00"
+                  },
+                  "end_time": {
+                    "type": "string",
+                    "format": "date-time",
+                    "example": "2024-06-24 23:59:59"
+                  },
+                  "severity": {
+                    "description": "Severity levels for GuardDuty findings, High: 7, Medium: 4, Low: 1",
+                    "type": "integer",
+                    "format": "int32",
+                    "default": 1,
+                    "example": 1
+                  }
+                },
+                "required": [
+                  "start_time",
+                  "end_time"
+                ]
               }
             }
           }
@@ -55,13 +79,42 @@
     },
     "/inspector": {
       "post": {
-        "description": "Retrieve AWS inspector findings from start_time to end_time",
+        "description": "Retrieve AWS inspector findings",
         "operationId": "RetrieveInspectorFindings",
         "requestBody": {
           "content": {
             "application/json": {
               "schema": {
-                "$ref": "#/components/schemas/Payload"
+                "title": "API request payload",
+                "type": "object",
+                "properties": {
+                  "start_time": {
+                    "type": "string",
+                    "format": "date-time",
+                    "example": "2024-06-23 00:00:00"
+                  },
+                  "end_time": {
+                    "type": "string",
+                    "format": "date-time",
+                    "example": "2024-06-24 23:59:59"
+                  },
+                  "severity": {
+                    "description": "Severity levels for Inspector findings",
+                    "type": "string",
+                    "default": "UNTRIAGED",
+                    "enum": [
+                      "INFORMATIONAL",
+                      "LOW",
+                      "MEDIUM",
+                      "HIGH",
+                      "CRITICAL"
+                    ]
+                  }
+                },
+                "required": [
+                  "start_time",
+                  "end_time"
+                ]
               }
             }
           }
@@ -75,13 +128,40 @@
     },
     "/iotsecurity": {
       "post": {
-        "description": "Retrieve AWS IoT device defender audit findings from start_time to end_time",
+        "description": "Retrieve AWS IoT device defender audit findings",
         "operationId": "RetrieveIoTAuditFindings",
         "requestBody": {
           "content": {
             "application/json": {
               "schema": {
-                "$ref": "#/components/schemas/Payload"
+                "title": "API request payload",
+                "type": "object",
+                "properties": {
+                  "start_time": {
+                    "type": "string",
+                    "format": "date-time",
+                    "example": "2024-06-23 00:00:00"
+                  },
+                  "end_time": {
+                    "type": "string",
+                    "format": "date-time",
+                    "example": "2024-06-24 23:59:59"
+                  },
+                  "severity": {
+                    "description": "Severity levels for AWS IoT device defender audit findings",
+                    "type": "string",
+                    "enum": [
+                      "LOW",
+                      "MEDIUM",
+                      "HIGH",
+                      "CRITICAL"
+                    ]
+                  }
+                },
+                "required": [
+                  "start_time",
+                  "end_time"
+                ]
               }
             }
           }

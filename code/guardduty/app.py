@@ -15,6 +15,8 @@ def lambda_handler(event, context):
     parameters = json.loads(event["body"])
     start_time_str = parameters['start_time']
     end_time_str = parameters['end_time']
+    # The value of the severity can fall within the 1.0 to 8.9 range
+    severity = parameters['severity'] or 0
 
     # 将字符串转换为 datetime 对象
     start_time_obj = datetime.strptime(start_time_str, '%Y-%m-%d %H:%M:%S').replace(tzinfo=tz.tzutc())
@@ -28,15 +30,19 @@ def lambda_handler(event, context):
 
     # Create a PageIterator from the Paginator
     page_iterator = paginator.paginate(
+        PaginationConfig={
+            # Limits the maximum number of total returned items returned while paginating. See: https://boto3.amazonaws.com/v1/documentation/api/latest/guide/paginators.html
+            'MaxItems': 500
+        },
         DetectorId = detector_id,
         FindingCriteria = {
             'Criterion': {
                 'updatedAt': {
-                    'Gte': int(start_time_obj.timestamp() * 1000),
-                    'Lte': int(end_time_obj.timestamp() * 1000)
+                    'GreaterThanOrEqual': int(start_time_obj.timestamp() * 1000),
+                    'LessThanOrEqual': int(end_time_obj.timestamp() * 1000)
                 },
                 'severity': {
-                    'Gte': 0
+                    'GreaterThanOrEqual': severity
                 },
             }
         },

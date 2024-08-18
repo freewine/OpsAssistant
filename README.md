@@ -29,10 +29,13 @@ This project contains source code and supporting files for a serverless applicat
 ├── assets
 │   └── images
 ├── code                # Code for the application's Lambda function.
+│   ├── authorizer      # API Gateway Token authorizer
 │   ├── cloudtrail
 │   ├── ec2
 │   ├── guardduty
 │   ├── inspector
+│   ├── iotsecurity
+│   ├── reports          # Generate Security reports daily/weekly/monthly
 │   └── waf
 ├── doc
 ├── events              # Invocation events that you can use to invoke API gateway.

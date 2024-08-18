@@ -12,7 +12,11 @@ def lambda_handler(event, context):
     parameters = json.loads(event["body"])
     start_time_str = parameters['start_time']
     end_time_str = parameters['end_time']
-    severity = parameters.get('severity', 'INFORMATIONAL')
+    severity = parameters.get('severity', 'UNTRIAGED')
+
+    severity_comparison = 'EQUALS'
+    if(severity == 'UNTRIAGED'):
+        severity_comparison = 'NOT_EQUALS'
 
     # 将字符串转换为 datetime 对象
     start_time_obj = datetime.strptime(start_time_str, '%Y-%m-%d %H:%M:%S').replace(tzinfo=tz.tzutc())
@@ -25,13 +29,17 @@ def lambda_handler(event, context):
 
     # Create a PageIterator from the Paginator
     page_iterator = paginator.paginate(
+        PaginationConfig={
+            # Limits the maximum number of total returned items returned while paginating. See: https://boto3.amazonaws.com/v1/documentation/api/latest/guide/paginators.html
+            'MaxItems': 500
+        },
         filterCriteria={
-            'awsAccountId': [
-                {
-                    'comparison': 'EQUALS',
-                    'value': '032998046382'
-                }
-            ],
+            # 'awsAccountId': [
+            #     {
+            #         'comparison': 'EQUALS',
+            #         'value': '012345678901'
+            #     }
+            # ],
             'updatedAt': [
                 {
                     'endInclusive': end_time_obj,
@@ -40,7 +48,7 @@ def lambda_handler(event, context):
             ],
             'severity': [
                 {
-                    'comparison': 'EQUALS',
+                    'comparison': severity_comparison,
                     'value': severity
                 }
             ],

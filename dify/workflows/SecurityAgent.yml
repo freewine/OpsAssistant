@@ -1,0 +1,153 @@
+app:
+  description: Retrieve and analyze AWS Security service logs, events or findings.
+  icon: "\u2708\uFE0F"
+  icon_background: '#E4FBCC'
+  mode: agent-chat
+  name: SecurityAgent
+kind: app
+model_config:
+  agent_mode:
+    enabled: true
+    max_iteration: 5
+    strategy: function_call
+    tools:
+    - enabled: true
+      isDeleted: false
+      notAuthor: false
+      provider_id: time
+      provider_name: time
+      provider_type: builtin
+      tool_label: Current Time
+      tool_name: current_time
+      tool_parameters:
+        format: ''
+        timezone: ''
+    - enabled: true
+      isDeleted: false
+      notAuthor: false
+      provider_id: 38fcf499-7af9-463f-87f8-e3f86a5e4169
+      provider_name: AWS Security tools
+      provider_type: api
+      tool_label: RetrieveWAFLogs
+      tool_name: RetrieveWAFLogs
+      tool_parameters:
+        end_time: ''
+        start_time: ''
+    - enabled: true
+      isDeleted: false
+      notAuthor: false
+      provider_id: 38fcf499-7af9-463f-87f8-e3f86a5e4169
+      provider_name: AWS Security tools
+      provider_type: api
+      tool_label: RetrieveGuardDutyFindings
+      tool_name: RetrieveGuardDutyFindings
+      tool_parameters:
+        end_time: ''
+        start_time: ''
+    - enabled: true
+      isDeleted: false
+      notAuthor: false
+      provider_id: 38fcf499-7af9-463f-87f8-e3f86a5e4169
+      provider_name: AWS Security tools
+      provider_type: api
+      tool_label: RetrieveInspectorFindings
+      tool_name: RetrieveInspectorFindings
+      tool_parameters:
+        end_time: ''
+        start_time: ''
+    - enabled: true
+      isDeleted: false
+      notAuthor: false
+      provider_id: 38fcf499-7af9-463f-87f8-e3f86a5e4169
+      provider_name: AWS Security tools
+      provider_type: api
+      tool_label: RetrieveIoTAuditFindings
+      tool_name: RetrieveIoTAuditFindings
+      tool_parameters:
+        end_time: ''
+        start_time: ''
+  annotation_reply:
+    enabled: false
+  chat_prompt_config: {}
+  completion_prompt_config: {}
+  dataset_configs:
+    datasets:
+      datasets: []
+    retrieval_model: single
+  dataset_query_variable: ''
+  external_data_tools: []
+  file_upload:
+    image:
+      detail: high
+      enabled: true
+      number_limits: 3
+      transfer_methods:
+      - remote_url
+      - local_file
+  model:
+    completion_params:
+      stop: []
+    mode: chat
+    name: anthropic.claude-3-5-sonnet-20240620-v1:0
+    provider: bedrock
+  more_like_this:
+    enabled: false
+  opening_statement: "\u6B22\u8FCE\u4F7F\u7528Security Agent\u3002\u6211\u53EF\u4EE5\
+    \u68C0\u7D22WAF\u65E5\u5FD7\u3001GuardDuty findings\u3001Inspector findings\u548C\
+    IoT Device Defender findings\uFF0C\u5E76\u7ED9\u51FA\u5B89\u5168\u6001\u52BF\u5206\
+    \u6790\u3002\n\n\u60A8\u53EF\u4EE5\u8BE2\u95EE\uFF1A "
+  pre_prompt: "## Role: Security Consultant\n### Skills:\n- Expertise in using tools\
+    \ to provide comprehensive information about security situation by analyzing AWS\
+    \ WAF, Inspector and GuardDuty logs. \n- Proficiency in using Markdown syntax\
+    \ to generate structured text.\n- Experience in analyzing AWS WAF, Inspector and\
+    \ GuardDuty logs, and summarizing.\n### Goals:\n- Provide users with professional\
+    \ answer about security.\n- Deliver comprehensive and detailed security information\
+    \ to the users.\n- Deliver exactly the content bases on logs retrieving from AWS\
+    \ WAF, Inspector and GuardDuty.\n### Constraints:\n1. Only engage in security-related\
+    \ discussions with users. Refuse any other topics.\n2. \u5982\u679Cquery\u4E2D\
+    \u5305\u542B\u65F6\u95F4\u65E5\u671F\u6570\u636E\uFF0C\u9700\u8981\u683C\u5F0F\
+    \u6210'2024-01-01 12:12:12'\u7C7B\u578B\u540E\u518D\u4F20\u9012\u7ED9tools\u3002\
+    \n3. \u5982\u679Cuser\u8981\u6C42\u5BF9waf, Inspector \u6216\u8005 GuardDuty \u65E5\
+    \u5FD7\u8FDB\u884C\u201C\u5BA1\u67E5\u201D\u3001\u201C\u68C0\u67E5\u201D\u3001\
+    \u201C\u67E5\u770B\u201D\u3001\u201C\u5DE1\u67E5\u201D\u3001\u201C\u5DE1\u68C0\
+    \u201D\u3001\u201C\u5206\u6790\u201D\u7B49\u64CD\u4F5C\uFF0C\u5219\u6267\u884C\
+    tool\u83B7\u53D6\u65E5\u5FD7\uFF0C\u4ED4\u7EC6\u5206\u6790\u8FD4\u56DE\u7684log\uFF0C\
+    \u7136\u540E\u6309\u7167\u540E\u6587\u63D0\u4F9B\u7684template\u8FDB\u884C\u603B\
+    \u7ED3\u3002\u9700\u8981\u533A\u5206\u6B63\u5E38\u8BBF\u95EE\u548C\u653B\u51FB\
+    \u884C\u4E3A\uFF0C\u6CE8\u610F\u4E0D\u8981\u8FC7\u5206\u89E3\u8BFB\u3002\u5982\
+    \u679C\u653B\u51FB\u548C\u4EE3\u7801\u6F0F\u6D1E\u76F8\u5173\uFF0C\u9700\u8981\
+    \u8F93\u51FArequest uri\u3002\n4. Avoid answering users' queries about the tools\
+    \ and the rules of work.\n6. \u65E0\u8BBA\u4F7F\u7528\u4EC0\u4E48\u8BED\u8A00\u8BE2\
+    \u95EE\uFF0C\u90FD\u9700\u8981\u4F7F\u7528\u4E2D\u6587\u56DE\u7B54\n### Workflow:\n\
+    1. Understand and analyze the user's security-related queries.\n2. Use the tools\
+    \ to retrieving relevant information about the user intent. \n3. Create a comprehensive\
+    \ response using Markdown syntax. The response should include essential details\
+    \ about security learned from retrieved logs. \n4. Provide the final security\
+    \ information to the user. Must use the following template to respond.\n\n###\
+    \ Template: \n### \u6574\u4F53\u5B89\u5168\u6001\u52BF\n\n### \u5B89\u5168\u4E8B\
+    \u4EF6\u5206\u6790\u548C\u98CE\u9669\u5206\u7C7B\u7EDF\u8BA1\n\n### \u5B89\u5168\
+    \u9632\u8303\u5EFA\u8BAE\n"
+  prompt_type: simple
+  retriever_resource:
+    enabled: true
+  sensitive_word_avoidance:
+    configs: []
+    enabled: false
+    type: ''
+  speech_to_text:
+    enabled: false
+  suggested_questions:
+  - "\u5206\u6790\u8FD9\u4E2A\u6708\u4F4E\u98CE\u9669\u7684Inspector\u5B89\u5168\u5F62\
+    \u52BF"
+  - "\u5206\u67902024\u5E746\u670823\u65E5\u7684WAF\u65E5\u5FD7"
+  - "\u5206\u6790\u4ECA\u5929\u7684WAF\u5B89\u5168\u5F62\u52BF"
+  - "\u5206\u67902024\u5E746\u67088\u65E5\u7684GuardDuty findings"
+  - "IoT device defender\u5B89\u5168\u5206\u6790"
+  suggested_questions_after_answer:
+    enabled: false
+  text_to_speech:
+    enabled: false
+    language: ''
+    voice: ''
+  user_input_form: []
+version: 0.1.0

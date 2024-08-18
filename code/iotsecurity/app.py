@@ -12,7 +12,8 @@ def lambda_handler(event, context):
     parameters = json.loads(event["body"])
     start_time_str = parameters['start_time']
     end_time_str = parameters['end_time']
-    severity = parameters.get('severity', 'INFORMATIONAL')
+    severity = parameters.get('severity')
+    print(severity)
 
     # 将字符串转换为 datetime 对象
     start_time_obj = datetime.strptime(start_time_str, '%Y-%m-%d %H:%M:%S').replace(tzinfo=tz.tzutc())
@@ -25,14 +26,20 @@ def lambda_handler(event, context):
 
     # Create a PageIterator from the Paginator
     page_iterator = paginator.paginate(
-        taskId = '355baa35af2d0cce6989e7c585d4b369',
-        # startTime=start_time_obj,
-        # endTime=end_time_obj
+        PaginationConfig={
+            # Limits the maximum number of total returned items returned while paginating. See: https://boto3.amazonaws.com/v1/documentation/api/latest/guide/paginators.html
+            'MaxItems': 500
+        },
+        startTime=start_time_obj,
+        endTime=end_time_obj
     )
 
     for page in page_iterator:
-        print(page['findings'])
-        finding_results += page['findings']
+        # print(page['findings'])
+        if(severity):
+            finding_results += [item for item in page['findings'] if item['severity'] == severity]
+        else:
+            finding_results += page['findings']
 
     return {
         'statusCode': 200,

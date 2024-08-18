@@ -22,9 +22,9 @@ Parameters:
   GuarddutyDetectorID:
     Type: String
     Description: Guardduty Detector ID
-  AgentID:
-    Type: String
-    Description: Bedrock Agent ID
+  # AgentID:
+  #   Type: String
+  #   Description: Bedrock Agent ID
   SNSTopicsARN:
     Type: String
     Description: SNS Topics ARN
