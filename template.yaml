@@ -163,6 +163,23 @@ Resources:
           REGION: !Ref AWS::Region
       Policies:
         - AdministratorAccess  
+  BedrockKBFunction:
+    Type: AWS::Serverless::Function 
+    Properties:
+      CodeUri: code/bedrock/
+      Handler: app.lambda_handler
+      Runtime: python3.12
+      Architectures:
+        - x86_64
+      Events:
+        OpsAssistant:
+          Type: Api # More info about API Event Source: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#api
+          Properties:
+            RestApiId: !Ref ToolsApi
+            Path: /tools/bedrock_kb
+            Method: post
+      Policies:
+        - AdministratorAccess  
   ReportsFunction:
     Type: AWS::Serverless::Function
     Properties:

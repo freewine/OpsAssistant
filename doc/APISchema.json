@@ -172,6 +172,36 @@
           }
         }
       }
+    },
+    "/bedrock_kb": {
+      "post": {
+        "description": "Retrieve data from Amazon bedrock knowledge base",
+        "operationId": "RetrieveBedrockKB",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "title": "API request payload",
+                "type": "object",
+                "properties": {
+                  "query": {
+                    "type": "string",
+                    "example": "how to enable Amazon EBS encryption"
+                  }
+                },
+                "required": [
+                  "query"
+                ]
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successfully processed"
+          }
+        }
+      }
     }
   },
   "components": {

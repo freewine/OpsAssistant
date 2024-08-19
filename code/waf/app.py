@@ -27,7 +27,7 @@ def lambda_handler(event, context):
         logGroupName=log_group_name,
         startTime=int(start_time_obj.timestamp() * 1000),
         endTime=int(end_time_obj.timestamp() * 1000),
-        queryString='fields @timestamp, @message | sort @timestamp desc | limit 1000'
+        queryString='fields @timestamp, @message | sort @timestamp desc | limit 500'
     )
 
     # print(query_result)

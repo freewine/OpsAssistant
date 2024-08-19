@@ -35,8 +35,9 @@ This project contains source code and supporting files for a serverless applicat
 │   ├── guardduty
 │   ├── inspector
 │   ├── iotsecurity
-│   ├── reports          # Generate Security reports daily/weekly/monthly
+│   ├── reports         # Generate Security reports daily/weekly/monthly
 │   └── waf
+├── dify                # Dify prompts or workflow DSLs
 ├── doc
 ├── events              # Invocation events that you can use to invoke API gateway.
 ├── template.yaml	# A template that defines the application's AWS resources.
