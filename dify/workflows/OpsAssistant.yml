@@ -1,0 +1,941 @@
+app:
+  description: Ops Assistant
+  icon: airplane
+  icon_background: '#FFEAD5'
+  mode: advanced-chat
+  name: OpsAssistant
+kind: app
+version: 0.1.0
+workflow:
+  environment_variables: []
+  features:
+    file_upload:
+      image:
+        enabled: true
+        number_limits: 3
+        transfer_methods:
+        - remote_url
+        - local_file
+    opening_statement: "\u6211\u662F\u60A8\u7684AWS\u8FD0\u7EF4\u52A9\u624B, \u6211\
+      \u5C06\u4E3A\u60A8\u89E3\u7B54\u6709\u5173AWS\u670D\u52A1\u7684\u4EFB\u4F55\u7591\
+      \u95EE\u3002\u8BA9\u6211\u4EEC\u4E00\u8D77\u6DF1\u5165\u63A2\u7D22AWS\u7684\u4E16\
+      \u754C\u5427!"
+    retriever_resource:
+      enabled: true
+    sensitive_word_avoidance:
+      configs: []
+      enabled: false
+      type: ''
+    speech_to_text:
+      enabled: false
+    suggested_questions:
+    - write an AWS cli to copy local directory to S3 bucket
+    - how to enable Amazon EBS encryption
+    - what's the price of m5.xlarge
+    - "\u83B7\u53D6\u4ECE2024\u5E748\u670824\u65E5\u523025\u65E5\u7684VPC flow\u65E5\
+      \u5FD7, \u5E76\u5206\u6790\u5B89\u5168\u5F62\u52BF"
+    - "\u7EDF\u8BA1eni-091525bd41b97d933\u63A5\u53E3ID\u7684VPC flow\u8BB0\u5F55\u6570\
+      \u91CF"
+    suggested_questions_after_answer:
+      enabled: false
+    text_to_speech:
+      enabled: false
+      language: ''
+      voice: ''
+  graph:
+    edges:
+    - data:
+        isInIteration: false
+        sourceType: start
+        targetType: question-classifier
+      id: start-source-1723894726409-target
+      selected: false
+      source: start
+      sourceHandle: source
+      target: '1723894726409'
+      targetHandle: target
+      type: custom
+      zIndex: 0
+    - data:
+        isInIteration: false
+        sourceType: question-classifier
+        targetType: llm
+      id: 1723894726409-1-llm-target
+      selected: false
+      source: '1723894726409'
+      sourceHandle: '1'
+      target: llm
+      targetHandle: target
+      type: custom
+      zIndex: 0
+    - data:
+        isInIteration: false
+        sourceType: llm
+        targetType: answer
+      id: llm-source-answer-target
+      selected: false
+      source: llm
+      sourceHandle: source
+      target: answer
+      targetHandle: target
+      type: custom
+      zIndex: 0
+    - data:
+        isInIteration: false
+        sourceType: llm
+        targetType: answer
+      id: 1723895266072-source-1723895334515-target
+      selected: false
+      source: '1723895266072'
+      sourceHandle: source
+      target: '1723895334515'
+      targetHandle: target
+      type: custom
+      zIndex: 0
+    - data:
+        isInIteration: false
+        sourceType: question-classifier
+        targetType: llm
+      id: 1723894726409-1723945975085-1723986416555-target
+      selected: false
+      source: '1723894726409'
+      sourceHandle: '1723945975085'
+      target: '1723986416555'
+      targetHandle: target
+      type: custom
+      zIndex: 0
+    - data:
+        isInIteration: false
+        sourceType: llm
+        targetType: answer
+      id: 1723986416555-source-1723894857040-target
+      selected: false
+      source: '1723986416555'
+      sourceHandle: source
+      target: '1723894857040'
+      targetHandle: target
+      type: custom
+      zIndex: 0
+    - data:
+        isInIteration: false
+        sourceType: question-classifier
+        targetType: tool
+      id: 1723894726409-2-1724028212781-target
+      selected: false
+      source: '1723894726409'
+      sourceHandle: '2'
+      target: '1724028212781'
+      targetHandle: target
+      type: custom
+      zIndex: 0
+    - data:
+        isInIteration: false
+        sourceType: tool
+        targetType: llm
+      id: 1724028212781-source-1724028237612-target
+      selected: false
+      source: '1724028212781'
+      sourceHandle: source
+      target: '1724028237612'
+      targetHandle: target
+      type: custom
+      zIndex: 0
+    - data:
+        isInIteration: false
+        sourceType: llm
+        targetType: answer
+      id: 1724028237612-source-1724028274464-target
+      selected: false
+      source: '1724028237612'
+      sourceHandle: source
+      target: '1724028274464'
+      targetHandle: target
+      type: custom
+      zIndex: 0
+    - data:
+        isInIteration: false
+        sourceType: llm
+        targetType: code
+      id: 1724547719765-source-1724570636187-target
+      selected: false
+      source: '1724547719765'
+      sourceHandle: source
+      target: '1724570636187'
+      targetHandle: target
+      type: custom
+      zIndex: 0
+    - data:
+        isInIteration: false
+        sourceType: tool
+        targetType: llm
+      id: 1724571096355-source-1724572780334-target
+      selected: false
+      source: '1724571096355'
+      sourceHandle: source
+      target: '1724572780334'
+      targetHandle: target
+      type: custom
+      zIndex: 0
+    - data:
+        isInIteration: false
+        sourceType: llm
+        targetType: answer
+      id: 1724572780334-source-1724572717033-target
+      selected: false
+      source: '1724572780334'
+      sourceHandle: source
+      target: '1724572717033'
+      targetHandle: target
+      type: custom
+      zIndex: 0
+    - data:
+        isInIteration: false
+        sourceType: code
+        targetType: tool
+      id: 1724570636187-source-1724571096355-target
+      source: '1724570636187'
+      sourceHandle: source
+      target: '1724571096355'
+      targetHandle: target
+      type: custom
+      zIndex: 0
+    - data:
+        isInIteration: false
+        sourceType: question-classifier
+        targetType: llm
+      id: 1723894726409-1723946004626-1724547719765-target
+      source: '1723894726409'
+      sourceHandle: '1723946004626'
+      target: '1724547719765'
+      targetHandle: target
+      type: custom
+      zIndex: 0
+    - data:
+        isInIteration: false
+        sourceType: question-classifier
+        targetType: llm
+      id: 1723894726409-1724573479166-1723895266072-target
+      source: '1723894726409'
+      sourceHandle: '1724573479166'
+      target: '1723895266072'
+      targetHandle: target
+      type: custom
+      zIndex: 0
+    nodes:
+    - data:
+        selected: false
+        title: START
+        type: start
+        variables: []
+      height: 53
+      id: start
+      position:
+        x: 80
+        y: 282
+      positionAbsolute:
+        x: 80
+        y: 282
+      selected: false
+      type: custom
+      width: 244
+    - data:
+        context:
+          enabled: true
+          variable_selector:
+          - knowledge_retrieval
+          - result
+        memory:
+          role_prefix:
+            assistant: ''
+            user: ''
+          window:
+            enabled: false
+        model:
+          completion_params:
+            stop: []
+          mode: chat
+          name: anthropic.claude-3-5-sonnet-20240620-v1:0
+          provider: bedrock
+        prompt_template:
+        - id: e840fe9f-daa3-420e-88cf-a2a3819a69cf
+          role: system
+          text: 'You''re an AWS expert, you can generate AWS cli according to user
+            request.
+
+
+            '
+        selected: false
+        title: CLI Generator
+        type: llm
+        vision:
+          configs:
+            detail: high
+          enabled: true
+          variable_selector:
+          - sys
+          - files
+      height: 97
+      id: llm
+      position:
+        x: 716.7848615192855
+        y: 257.89607941014896
+      positionAbsolute:
+        x: 716.7848615192855
+        y: 257.89607941014896
+      selected: false
+      type: custom
+      width: 244
+    - data:
+        answer: '{{#llm.text#}}'
+        selected: false
+        title: ANSWER
+        type: answer
+      height: 107
+      id: answer
+      position:
+        x: 1056.0092013260362
+        y: 257.89607941014896
+      positionAbsolute:
+        x: 1056.0092013260362
+        y: 257.89607941014896
+      selected: false
+      type: custom
+      width: 244
+    - data:
+        classes:
+        - id: '1'
+          name: AWS cli generator
+        - id: '2'
+          name: Ecovacs QA
+        - id: '1723945975085'
+          name: AWS EC2 price
+        - id: '1723946004626'
+          name: VPC Flow log
+        - id: '1724573479166'
+          name: other
+        desc: ''
+        instructions: ''
+        model:
+          completion_params:
+            temperature: 0.7
+          mode: chat
+          name: anthropic.claude-3-5-sonnet-20240620-v1:0
+          provider: bedrock
+        query_variable_selector:
+        - start
+        - sys.query
+        selected: false
+        title: Question Classifier
+        topics: []
+        type: question-classifier
+      height: 303
+      id: '1723894726409'
+      position:
+        x: 378.3218923802957
+        y: 282
+      positionAbsolute:
+        x: 378.3218923802957
+        y: 282
+      selected: false
+      sourcePosition: right
+      targetPosition: left
+      type: custom
+      width: 244
+    - data:
+        answer: '{{#1723986416555.text#}}'
+        desc: ''
+        selected: false
+        title: Answer 2
+        type: answer
+        variables: []
+      height: 107
+      id: '1723894857040'
+      position:
+        x: 1056.0092013260362
+        y: 501.503099256106
+      positionAbsolute:
+        x: 1056.0092013260362
+        y: 501.503099256106
+      selected: false
+      sourcePosition: right
+      targetPosition: left
+      type: custom
+      width: 244
+    - data:
+        context:
+          enabled: false
+          variable_selector: []
+        desc: ''
+        model:
+          completion_params:
+            temperature: 0.7
+          mode: chat
+          name: anthropic.claude-3-5-sonnet-20240620-v1:0
+          provider: bedrock
+        prompt_template:
+        - id: 9e007089-2c22-46bf-99e0-1c53959df64a
+          role: system
+          text: 'Use the following context as your learned knowledge, inside <context></context>
+            XML tags.
+
+
+            <context>
+
+            {{#context#}}
+
+            </context>
+
+
+            When answer to user:
+
+            - If you don''t know, just say that you don''t know.
+
+            - If you don''t know when you are not sure, ask for clarification.
+
+            Avoid mentioning that you obtained the information from the context.
+
+            And answer according to the language of the user''s question.
+
+
+            <instruction>
+
+            You are an AWS expert tasked with answering questions about AWS services.
+            Follow these steps:
+
+
+            1. Carefully read the user question about AWS services.
+
+            2. Retrieve the knowledge base to find relevant information.
+
+            3. Formulate a clear, concise, and accurate answer based on the information
+            from the knowledge base.
+
+            4. If the knowledge base doesn''t contain sufficient information to answer
+            the question, state that you don''t have enough information to provide
+            a complete answer.
+
+            5. If appropriate, suggest related AWS services or concepts that might
+            be helpful for the user to explore further.
+
+            6. Ensure your response is professional and tailored to someone seeking
+            expert AWS advice.
+
+            7. Do not include any XML tags in your output.
+
+
+            Remember to only provide information that you are confident is correct
+            based on the knowledge base retrievals.
+
+            </instruction>
+
+
+            <output>
+
+            The AI''s response to the user''s question about AWS services, based on
+            the knowledge base retrievals.
+
+            </output>
+
+
+            <example>
+
+            User Question: What is Amazon S3 and how does it work?
+
+
+            Knowledge Base Retrieval: Amazon S3 (Simple Storage Service) is an object
+            storage service offering industry-leading scalability, data availability,
+            security, and performance. Customers of all sizes and industries can store
+            and protect any amount of data for virtually any use case, such as data
+            lakes, cloud-native applications, and mobile apps. S3 provides management
+            features to optimize, organize, and configure access to your data to meet
+            your specific business, organizational, and compliance requirements.
+
+
+            AI Response: Amazon S3 (Simple Storage Service) is a highly scalable object
+            storage service provided by AWS. It allows you to store and retrieve any
+            amount of data from anywhere on the web. Here''s how it works:
+
+
+            1. Data Storage: You can upload any type of file (called "objects") to
+            S3, which are then stored in "buckets" (similar to folders).
+
+            2. Scalability: S3 can store virtually unlimited amounts of data and automatically
+            scales to meet your needs.
+
+            3. Durability and Availability: S3 replicates your data across multiple
+            facilities within
+
+            '
+        - id: 7d9a6ff6-ed30-4990-af90-12934944ac6c
+          role: user
+          text: '{{#sys.query#}}'
+        selected: false
+        title: Chatbot
+        type: llm
+        variables: []
+        vision:
+          configs:
+            detail: high
+          enabled: true
+      height: 97
+      id: '1723895266072'
+      position:
+        x: 716.7848615192855
+        y: 775.5633124618424
+      positionAbsolute:
+        x: 716.7848615192855
+        y: 775.5633124618424
+      selected: false
+      sourcePosition: right
+      targetPosition: left
+      type: custom
+      width: 244
+    - data:
+        answer: '{{#1723895266072.text#}}'
+        desc: ''
+        selected: false
+        title: Answer 3
+        type: answer
+        variables: []
+      height: 107
+      id: '1723895334515'
+      position:
+        x: 1043.6949916857839
+        y: 775.5633124618424
+      positionAbsolute:
+        x: 1043.6949916857839
+        y: 775.5633124618424
+      selected: false
+      sourcePosition: right
+      targetPosition: left
+      type: custom
+      width: 244
+    - data:
+        context:
+          enabled: false
+          variable_selector: []
+        desc: ''
+        model:
+          completion_params:
+            temperature: 0.7
+          mode: chat
+          name: anthropic.claude-3-5-sonnet-20240620-v1:0
+          provider: bedrock
+        prompt_template:
+        - id: f02dddc7-bfc5-42e8-acf6-1c13267d1961
+          role: system
+          text: "You're an AWS Athena expert, you can generate valid Athena SQL queries\
+            \ from natural language. The Athena table schema is defined in the <table>\
+            \ tag, including field names, types and comments. The output must follow\
+            \ json format in <format> tag.\n\n<table>\nCREATE EXTERNAL TABLE `ec2_pricing`(\n\
+            \  `instance_name_alias` string, \n  `instance_name` string, \n  `instance_memory_gib`\
+            \ double, \n  `number_vcpus` bigint, \n  `instance_storage_type_and_capacity`\
+            \ string, \n  `network_performance` string, \n  `on_demand_hourly_price`\
+            \ double, \n  `linux_reserved_cost_1_year_hourly` double, \n  `linux_spot_minimum_cost_hourly`\
+            \ double)\nROW FORMAT DELIMITED \n  FIELDS TERMINATED BY ',' \nSTORED\
+            \ AS INPUTFORMAT \n  'org.apache.hadoop.mapred.TextInputFormat' \nOUTPUTFORMAT\
+            \ \n  'org.apache.hadoop.hive.ql.io.HiveIgnoreKeyTextOutputFormat'\nLOCATION\n\
+            \  's3://chatbot-stack-athena-bucket-032998046382/data_query_data_source/ec2_pricing/'\n\
+            </table>\n\n<format>\n{\n  \"SQL\" :\"your generated SQL query\"\n}\n\
+            </format>\n\nHere are some examples:\n<example>\nExample 1:\nQuestion:\
+            \ Which instance has the most memory?\nGenerated SQL query: \n{\n  \"\
+            SQL\" :\"SELECT instance_name, instance_memory, instance_memory_unit FROM\
+            \ ec2_pricing ORDER BY instance_memory DESC LIMIT 5;\"\n}\n\n\nExample\
+            \ 2:\nQuestion: Which instance has the most cpus?\nGenerated SQL query:\
+            \ \n{\n  \"SQL\" :\"SELECT instance_name, number_vcpus FROM ec2_pricing\
+            \ ORDER BY number_vcpus DESC LIMIT 5;\"\n}\n</example>\n\nYou can only\
+            \ select table fields from the table schema. If SQL cannot be generated,\
+            \  return 'ERROR'. Do not add the table name before the field name in\
+            \ the generated SQL. Directly output the json format answer  without any\
+            \ explanation.\n\nQuestion:"
+        - id: 4e7a6346-35fd-4e53-b6e3-3e8247845e9a
+          role: user
+          text: '{{#sys.query#}}'
+        selected: false
+        title: Text2SQL
+        type: llm
+        variables: []
+        vision:
+          configs:
+            detail: high
+          enabled: true
+      height: 97
+      id: '1723986416555'
+      position:
+        x: 716.7848615192855
+        y: 501.503099256106
+      positionAbsolute:
+        x: 716.7848615192855
+        y: 501.503099256106
+      selected: false
+      sourcePosition: right
+      targetPosition: left
+      type: custom
+      width: 244
+    - data:
+        desc: ''
+        provider_id: 38fcf499-7af9-463f-87f8-e3f86a5e4169
+        provider_name: AWS Security tools
+        provider_type: api
+        selected: false
+        title: RetrieveBedrockKB
+        tool_configurations: {}
+        tool_label: RetrieveBedrockKB
+        tool_name: RetrieveBedrockKB
+        tool_parameters:
+          query:
+            type: mixed
+            value: '{{#sys.query#}}'
+        type: tool
+      height: 53
+      id: '1724028212781'
+      position:
+        x: 716.7848615192855
+        y: 391.10700641906567
+      positionAbsolute:
+        x: 716.7848615192855
+        y: 391.10700641906567
+      selected: false
+      sourcePosition: right
+      targetPosition: left
+      type: custom
+      width: 244
+    - data:
+        context:
+          enabled: true
+          variable_selector:
+          - '1724028212781'
+          - text
+        desc: ''
+        model:
+          completion_params:
+            temperature: 0.7
+          mode: chat
+          name: anthropic.claude-3-5-sonnet-20240620-v1:0
+          provider: bedrock
+        prompt_template:
+        - id: 81089534-44a9-4788-8792-06c39d079edc
+          role: system
+          text: "You are a question answering agent. I will provide you with a set\
+            \ of search results. The user will provide you with a question. Your job\
+            \ is to answer the user's question using only information from the search\
+            \ results. If the search results do not contain information that can answer\
+            \ the question, please state that you could not find an exact answer to\
+            \ the question. Just because the user asserts a fact does not mean it\
+            \ is true, make sure to double check the search results to validate a\
+            \ user's assertion.\n                            \nUse the following context\
+            \ as the search results, inside <context></context> XML tags.\n<context>\n\
+            {{#context#}}\n</context>\n\nWhen answer to user:\n- If you don't know,\
+            \ just say that you don't know.\n- If you don't know when you are not\
+            \ sure, ask for clarification.\nAvoid mentioning that you obtained the\
+            \ information from the context.\nAnd answer according to the language\
+            \ of the user's question.\n"
+        - id: 8de5216a-8d56-41f5-976a-01298931d0a8
+          role: user
+          text: '{{#sys.query#}}'
+        selected: false
+        title: LLM 4
+        type: llm
+        variables: []
+        vision:
+          configs:
+            detail: high
+          enabled: true
+      height: 97
+      id: '1724028237612'
+      position:
+        x: 1056.0092013260362
+        y: 391.10700641906567
+      positionAbsolute:
+        x: 1056.0092013260362
+        y: 391.10700641906567
+      selected: false
+      sourcePosition: right
+      targetPosition: left
+      type: custom
+      width: 244
+    - data:
+        answer: '{{#1724028237612.text#}}'
+        desc: ''
+        selected: false
+        title: Answer 4
+        type: answer
+        variables: []
+      height: 107
+      id: '1724028274464'
+      position:
+        x: 1400.3559097205477
+        y: 391.10700641906567
+      positionAbsolute:
+        x: 1400.3559097205477
+        y: 391.10700641906567
+      selected: false
+      sourcePosition: right
+      targetPosition: left
+      type: custom
+      width: 244
+    - data:
+        author: freewine
+        desc: ''
+        height: 182
+        selected: false
+        showAuthor: true
+        text: "{\"root\":{\"children\":[{\"children\":[{\"detail\":0,\"format\":0,\"\
+          mode\":\"normal\",\"style\":\"\",\"text\":\"1. write an AWS cli to copy\
+          \ local directory to S3 bucket\",\"type\":\"text\",\"version\":1}],\"direction\"\
+          :\"ltr\",\"format\":\"\",\"indent\":0,\"type\":\"paragraph\",\"version\"\
+          :1,\"textFormat\":0},{\"children\":[{\"detail\":0,\"format\":0,\"mode\"\
+          :\"normal\",\"style\":\"\",\"text\":\"2. how to enable Amazon EBS encryption\"\
+          ,\"type\":\"text\",\"version\":1}],\"direction\":\"ltr\",\"format\":\"\"\
+          ,\"indent\":0,\"type\":\"paragraph\",\"version\":1,\"textFormat\":0},{\"\
+          children\":[{\"detail\":0,\"format\":0,\"mode\":\"normal\",\"style\":\"\"\
+          ,\"text\":\"3. what's the price of m5.xlarge\",\"type\":\"text\",\"version\"\
+          :1}],\"direction\":\"ltr\",\"format\":\"\",\"indent\":0,\"type\":\"paragraph\"\
+          ,\"version\":1,\"textFormat\":0},{\"children\":[{\"detail\":0,\"format\"\
+          :0,\"mode\":\"normal\",\"style\":\"\",\"text\":\"4. \u83B7\u53D6\u4ECE2024\u5E74\
+          8\u670824\u65E5\u523025\u65E5\u7684VPC flow\u65E5\u5FD7, \u5E76\u5206\u6790\
+          \u5B89\u5168\u5F62\u52BF\",\"type\":\"text\",\"version\":1}],\"direction\"\
+          :\"ltr\",\"format\":\"\",\"indent\":0,\"type\":\"paragraph\",\"version\"\
+          :1,\"textFormat\":0}],\"direction\":\"ltr\",\"format\":\"\",\"indent\":0,\"\
+          type\":\"root\",\"version\":1}}"
+        theme: blue
+        title: ''
+        type: ''
+        width: 254
+      height: 182
+      id: '1724029696336'
+      position:
+        x: 86.78486151928564
+        y: 76.10700641906567
+      positionAbsolute:
+        x: 86.78486151928564
+        y: 76.10700641906567
+      selected: false
+      sourcePosition: right
+      targetPosition: left
+      type: custom-note
+      width: 254
+    - data:
+        context:
+          enabled: false
+          variable_selector: []
+        desc: Text 2 SQL
+        model:
+          completion_params:
+            temperature: 0.7
+          mode: chat
+          name: anthropic.claude-3-5-sonnet-20240620-v1:0
+          provider: bedrock
+        prompt_template:
+        - id: c1d793d8-7198-4fec-b9ba-ba0c0052c82a
+          role: system
+          text: "You're an AWS Athena expert, you can generate valid Athena SQL queries\
+            \ from natural language. The Athena table schema is defined in the <table>\
+            \ tag, including field names, types and comments. The output must follow\
+            \ json format in <format> </format> XML tags.\n\n<table>\nCREATE EXTERNAL\
+            \ TABLE `vpc_flow_logs`(\n  `time` bigint, \n  `timestamp` timestamp,\
+            \ \n  `version` int, \n  `account-id` string, \n  `interface-id` string,\
+            \ \n  `srcaddr` string, \n  `dstaddr` string, \n  `srcport` int, \n  `dstport`\
+            \ int, \n  `protocol` bigint, \n  `packets` bigint, \n  `bytes` bigint,\
+            \ \n  `start` bigint, \n  `end` bigint, \n  `action` string, \n  `log-status`\
+            \ string, \n  `vpc-id` string, \n  `subnet-id` string, \n  `instance-id`\
+            \ string, \n  `tcp-flags` int, \n  `type` string, \n  `pkt-srcaddr` string,\
+            \ \n  `pkt-dstaddr` string, \n  `az-id` string, \n  `sublocation-type`\
+            \ string, \n  `sublocation-id` string, \n  `pkt-src-aws-service` string,\
+            \ \n  `pkt-dst-aws-service` string, \n  `flow-direction` string, \n  `traffic-path`\
+            \ int)\nPARTITIONED BY ( \n  `event_hour` string, \n  `account_id` string,\
+            \ \n  `region` string, \n  `__execution_name__` string)\nROW FORMAT SERDE\
+            \ \n  'org.apache.hadoop.hive.ql.io.parquet.serde.ParquetHiveSerDe' \n\
+            STORED AS INPUTFORMAT \n  'org.apache.hadoop.hive.ql.io.parquet.MapredParquetInputFormat'\
+            \ \nOUTPUTFORMAT \n  'org.apache.hadoop.hive.ql.io.parquet.MapredParquetOutputFormat'\n\
+            LOCATION\n  's3://aws-logs-032998046382-us-west-2/datalake/amazon_cl_centralized/vpc_flow_logs'\n\
+            </table>\n\n<format>\n{\n  \"SQL\": \"your generated SQL query\"\n}\n\
+            </format>\n\nHere are some examples:\n<example>\nExample 1:\nQuestion:\
+            \ Query VPC flow logs between \"2024-08-24 22:30:51\" and \"2024-08-24\
+            \ 22:47:51\"\nGenerated SQL query: \n{\n  \"SQL\": \"SELECT * FROM \"\
+            vpc_flow_logs\" where \"timestamp\" between TIMESTAMP '2024-08-24 22:30:51'\
+            \ and TIMESTAMP '2024-08-24 22:47:51';\"\n}\n\n\nExample 2:\nQuestion:\
+            \ How many records from the IP address of \"10.0.12.18\"?\nGenerated SQL\
+            \ query: \n{\n  \"SQL\": \"SELECT COUNT(*) AS count FROM vpc_flow_logs\
+            \ WHERE \"srcaddr\" = '10.0.12.18';\"\n}\n</example>\n\n<constraint>\n\
+            1. You can only select table fields from the table schema. \n2. If SQL\
+            \ cannot be generated,  return 'ERROR'. \n3. Do not add the table name\
+            \ before the field name in the generated SQL. \n4. When generating SQL,\
+            \ enclose field name in double quotes. \n5. Directly output the json format\
+            \ answer without any explanation.\n6. When the generated SQL contains\
+            \ a WHERE clause, add ' AND \"log-status\" = 'OK' '.\n</constraint>\n\n\
+            Question:"
+        - id: 69b83905-ed4f-4c06-ae06-9fd6173358cf
+          role: user
+          text: '{{#sys.query#}}'
+        selected: false
+        title: VPC Flow log
+        type: llm
+        variables: []
+        vision:
+          configs:
+            detail: high
+          enabled: true
+      height: 125
+      id: '1724547719765'
+      position:
+        x: 716.7848615192855
+        y: 620.1812142444686
+      positionAbsolute:
+        x: 716.7848615192855
+        y: 620.1812142444686
+      selected: true
+      sourcePosition: right
+      targetPosition: left
+      type: custom
+      width: 244
+    - data:
+        code: "\ndef main(sql_json: str) -> dict:\n    sql = json.loads(sql_json,\
+          \ strict=False)\n    return {\n        \"SQL\": sql['SQL'],\n    }\n"
+        code_language: python3
+        desc: ''
+        outputs:
+          SQL:
+            children: null
+            type: string
+        selected: false
+        title: Code
+        type: code
+        variables:
+        - value_selector:
+          - '1724547719765'
+          - text
+          variable: sql_json
+      height: 53
+      id: '1724570636187'
+      position:
+        x: 1024.9494457479102
+        y: 620.1812142444686
+      positionAbsolute:
+        x: 1024.9494457479102
+        y: 620.1812142444686
+      selected: false
+      sourcePosition: right
+      targetPosition: left
+      type: custom
+      width: 244
+    - data:
+        desc: ''
+        provider_id: 38fcf499-7af9-463f-87f8-e3f86a5e4169
+        provider_name: AWS Security tools
+        provider_type: api
+        selected: false
+        title: RetrieveAthena
+        tool_configurations: {}
+        tool_label: RetrieveAthena
+        tool_name: RetrieveAthena
+        tool_parameters:
+          query:
+            type: mixed
+            value: '{{#1724570636187.SQL#}}'
+          query_type:
+            type: mixed
+            value: SQL
+          service:
+            type: mixed
+            value: VPC FLOW
+        type: tool
+      height: 53
+      id: '1724571096355'
+      position:
+        x: 1327.8494416375806
+        y: 620.1812142444686
+      positionAbsolute:
+        x: 1327.8494416375806
+        y: 620.1812142444686
+      selected: false
+      sourcePosition: right
+      targetPosition: left
+      type: custom
+      width: 244
+    - data:
+        answer: '{{#1724572780334.text#}}'
+        desc: ''
+        selected: false
+        title: Answer 6
+        type: answer
+        variables: []
+      height: 107
+      id: '1724572717033'
+      position:
+        x: 1925.890143225753
+        y: 620.1812142444686
+      positionAbsolute:
+        x: 1925.890143225753
+        y: 620.1812142444686
+      selected: false
+      sourcePosition: right
+      targetPosition: left
+      type: custom
+      width: 244
+    - data:
+        context:
+          enabled: true
+          variable_selector:
+          - '1724571096355'
+          - text
+        desc: ''
+        model:
+          completion_params:
+            temperature: 0.7
+          mode: chat
+          name: anthropic.claude-3-5-sonnet-20240620-v1:0
+          provider: bedrock
+        prompt_template:
+        - edition_type: basic
+          id: cf88b5f4-bd9c-4cc3-85a2-5a0fae60a6e6
+          role: system
+          text: 'You''re an AWS expert. You can answer user''s questions using context
+            between <constraint></constraint> XML tags with constraints in <constraint></constraint>
+            XML tags.
+
+
+            <context>
+
+            {{#context#}}
+
+            </context>
+
+
+            <constraint>
+
+            1. If you don''t know, just say that you don''t know.
+
+            2. Answer according to the language of the user''s question.
+
+            </constraint>
+
+            '
+        - id: e43647e8-25d1-490f-b8ab-182ba8cca2de
+          role: user
+          text: '{{#sys.query#}}'
+        selected: false
+        title: LLM 6
+        type: llm
+        variables: []
+        vision:
+          configs:
+            detail: high
+          enabled: true
+      height: 97
+      id: '1724572780334'
+      position:
+        x: 1620.0648124329368
+        y: 620.1812142444686
+      positionAbsolute:
+        x: 1620.0648124329368
+        y: 620.1812142444686
+      selected: false
+      sourcePosition: right
+      targetPosition: left
+      type: custom
+      width: 244
+    viewport:
+      x: -75.90321567921501
+      y: 61.84959803623076
+      zoom: 0.8120699819265875

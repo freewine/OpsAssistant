@@ -1,0 +1,5 @@
+{
+  "service": "VPC FLOW",
+  "query": "分析从2024年8月24日到25日的VPC flow日志",
+  "query_type": "RAW"
+}

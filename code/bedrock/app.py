@@ -1,15 +1,16 @@
 import boto3
-import json
+import json, os
 
 # Initialize the Bedrock client
 bedrock_client = boto3.client('bedrock-agent-runtime')
+
+knowledge_base_id = os.environ["BEDROCK_KB_ID"]
 
 def lambda_handler(event, context):
     print(event)
 
     parameters = json.loads(event["body"])
-    # Get the knowledge base ID and query from the event
-    knowledge_base_id = 'DWYNXMOTOM'
+    # Get query from the event
     query = parameters['query']
 
     # Call the Retrieve API to get relevant information from the knowledge base

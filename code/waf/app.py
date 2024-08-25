@@ -39,7 +39,7 @@ def lambda_handler(event, context):
         )
         if response['status'] in ['Complete', 'Failed', 'Cancelled', 'Timeout', 'Unknown']:
             break
-        time.sleep(0.1)
+        time.sleep(0.01)
 
     # format results
     results = []

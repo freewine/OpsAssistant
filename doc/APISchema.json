@@ -202,6 +202,58 @@
           }
         }
       }
+    },
+    "/athena": {
+      "post": {
+        "description": "Retrieve service logs from Amazon athena, such as VPC Flow logs",
+        "operationId": "RetrieveAthena",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "title": "API request payload",
+                "type": "object",
+                "properties": {
+                  "service": {
+                    "description": "The service we're retrieving logs of",
+                    "type": "string",
+                    "default": "VPC FLOW",
+                    "enum": [
+                      "VPC FLOW",
+                      "ELB",
+                      "CLOUDFRONT",
+                      "CLOUDTRAIL"
+                    ]
+                  },
+                  "query": {
+                    "type": "string",
+                    "description": "user original query",
+                    "example": "retrieve VPC FLOW logs from 2024.08.24 to 2024.08.25"
+                  },
+                  "query_type": {
+                    "type": "string",
+                    "description": "query type: RAW or SQL",
+                    "default": "RAW",
+                    "enum": [
+                        "SQL",
+                        "RAW"
+                      ]
+                  }
+                },
+                "required": [
+                  "service",
+                  "query"
+                ]
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successfully processed"
+          }
+        }
+      }
     }
   },
   "components": {

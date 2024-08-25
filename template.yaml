@@ -31,6 +31,12 @@ Parameters:
   AuthToken:
     Type: String
     Description: API Gateway Authorizer Token
+  BedrockKB:
+    Type: String
+    Description: Bedrock knowledge ID
+  AthenaWorkgroup:
+    Type: String
+    Description: Athena Workgroup
 
 Resources:
   ToolsApi:
@@ -178,6 +184,29 @@ Resources:
             RestApiId: !Ref ToolsApi
             Path: /tools/bedrock_kb
             Method: post
+      Environment:
+        Variables:
+          BEDROCK_KB_ID: !Ref BedrockKB
+      Policies:
+        - AdministratorAccess  
+  AthenaFunction:
+    Type: AWS::Serverless::Function 
+    Properties:
+      CodeUri: code/athena/
+      Handler: app.lambda_handler
+      Runtime: python3.12
+      Architectures:
+        - x86_64
+      Events:
+        OpsAssistant:
+          Type: Api # More info about API Event Source: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#api
+          Properties:
+            RestApiId: !Ref ToolsApi
+            Path: /tools/athena
+            Method: post
+      Environment: # More info about Env Vars: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#environment-object
+        Variables:
+          ATHENA_WORKGROUP: !Ref AthenaWorkgroup
       Policies:
         - AdministratorAccess  
   ReportsFunction:
@@ -205,21 +234,27 @@ Resources:
                 "report_period": "daily"
               }'
       Policies:
-        - AdministratorAccess  
         - Statement:
-            - Sid: SNSPolicy
-              Effect: Allow
-              Action:
-                - sns:Publish
-              Resource:
-                - !Sub ${SNSTopicsARN}
-            - Sid: DynamoDBPolicy
-              Effect: Allow
-              Action:
-                - dynamodb:GetItem
-                - dynamodb:PutItem
-              Resource:
-                - !Sub arn:${AWS::Partition}:dynamodb:${AWS::Region}:${AWS::AccountId}:table/SecurityReportsTable
+          - Sid: Bedrock
+            Effect: Allow
+            Action:
+              - bedrock:InvokeModel
+              - bedrock:InvokeModelWithResponseStream
+            Resource:
+              - arn:aws:bedrock:*::foundation-model/*
+          - Sid: SNSPolicy
+            Effect: Allow
+            Action:
+              - sns:Publish
+            Resource:
+              - !Sub ${SNSTopicsARN}
+          - Sid: DynamoDBPolicy
+            Effect: Allow
+            Action:
+              - dynamodb:GetItem
+              - dynamodb:PutItem
+            Resource:
+              - !Sub arn:${AWS::Partition}:dynamodb:${AWS::Region}:${AWS::AccountId}:table/SecurityReportsTable
   SecurityReportsTable:
     Type: AWS::Serverless::SimpleTable
     Properties:
