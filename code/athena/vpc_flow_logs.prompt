@@ -75,7 +75,7 @@ Generated SQL query:
 1. You can only select table fields from the table schema. 
 2. If SQL cannot be generated,  return 'ERROR'. 
 3. Do not add the table name before the field name in the generated SQL. 
-4. When generating SQL, enclose field name in double quotes. 
+4. When generating SQL, enclose field name in single quotes. 
 5. Directly output the json format answer without any explanation.
 6. When the generated SQL contains a WHERE clause, add ' AND "log-status" = 'OK' '.
 </constraint>

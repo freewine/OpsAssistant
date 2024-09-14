@@ -59,8 +59,6 @@ Resources:
       Environment: # More info about Env Vars: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#environment-object
         Variables:
           AUTH_TOKEN: !Ref AuthToken
-      Policies:
-        - AdministratorAccess  
   # EC2Function:
   #   Type: AWS::Serverless::Function # More info about Function Resource: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#awsserverlessfunction
   #   Properties:
@@ -107,7 +105,14 @@ Resources:
           WAF_LOG_GROUP: !Ref WAFLogGroup
           WAF_LOG_REGION: !Ref WAFLogRegion
       Policies:
-        - AdministratorAccess
+        - Statement:
+          - Sid: CloudWatchLogsPolicy
+            Effect: Allow
+            Action:
+              - logs:StartQuery
+              - logs:GetQueryResults
+            Resource:
+              - !Sub arn:${AWS::Partition}:logs:*:*:log-group:*
   GuarddutyFunction:
     Type: AWS::Serverless::Function # More info about Function Resource: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#awsserverlessfunction
     Properties:
@@ -128,7 +133,13 @@ Resources:
           REGION: !Ref AWS::Region
           DETECTOR_ID: !Ref GuarddutyDetectorID
       Policies:
-        - AdministratorAccess  
+        - Statement:
+          - Sid: GuarddutyPolicy
+            Effect: Allow
+            Action:
+              - guardduty:ListFindings
+              - guardduty:GetFindings
+            Resource: "*"
   InspectorFunction:
     Type: AWS::Serverless::Function # More info about Function Resource: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#awsserverlessfunction
     Properties:
@@ -148,7 +159,13 @@ Resources:
         Variables:
           REGION: !Ref AWS::Region
       Policies:
-        - AdministratorAccess  
+        - Statement:
+          - Sid: InspectorPolicy
+            Effect: Allow
+            Action:
+              - inspector2:ListFindings
+              - inspector2:GetFinding
+            Resource: "*"
   IoTSecurityFunction:
     Type: AWS::Serverless::Function 
     Properties:
@@ -168,7 +185,13 @@ Resources:
         Variables:
           REGION: !Ref AWS::Region
       Policies:
-        - AdministratorAccess  
+        - Statement:
+          - Sid: InspectorPolicy
+            Effect: Allow
+            Action:
+              - iot:ListAuditFindings
+              - iot:DescribeAuditFinding
+            Resource: "*"
   BedrockKBFunction:
     Type: AWS::Serverless::Function 
     Properties:
@@ -188,7 +211,14 @@ Resources:
         Variables:
           BEDROCK_KB_ID: !Ref BedrockKB
       Policies:
-        - AdministratorAccess  
+        - Statement:
+          - Sid: BedrockKBPolicy
+            Effect: Allow
+            Action:
+              - bedrock:GetKnowledgeBase
+              - bedrock:ListKnowledgeBases
+            Resource:
+              - !Sub arn:${AWS::Partition}:bedrock:*:*:knowledge-base/*
   AthenaFunction:
     Type: AWS::Serverless::Function 
     Properties:
@@ -208,30 +238,72 @@ Resources:
         Variables:
           ATHENA_WORKGROUP: !Ref AthenaWorkgroup
       Policies:
-        - AdministratorAccess  
+        - AthenaQueryPolicy:
+            WorkGroupName:
+              !Ref AthenaWorkgroup
+        - Statement:
+          - Sid: BedrockPolicy
+            Effect: Allow
+            Action:
+              - bedrock:InvokeModel
+              - bedrock:InvokeModelWithResponseStream
+            Resource:
+              - !Sub arn:${AWS::Partition}:bedrock:*::foundation-model/*
+        - Statement:
+          - Sid: S3Policy
+            Effect: Allow
+            Action:
+              - s3:ListBucket
+              - s3:GetObject
+              - s3:GetBucketLocation
+              - s3:PutObject
+              - s3:PutObjectTagging
+              - s3:GetObjectTagging
+            Resource: "*"
+        - Statement:
+          - Sid: GluePolicy
+            Effect: Allow
+            Action:
+              - glue:GetTables
+              - glue:GetTable
+              - glue:GetDatabases
+              - glue:GetDatabase
+            Resource: "*"
+        - Statement:
+          - Sid: KMSPolicy
+            Effect: Allow
+            Action:
+              - kms:GenerateDataKey*
+              - kms:Decrypt
+              - kms:Encrypt
+            Resource: "*"
   ReportsFunction:
     Type: AWS::Serverless::Function
     Properties:
       CodeUri: code/reports/
-      Handler: generate_report.lambda_handler
+      Handler: app.lambda_handler
       Runtime: python3.12
       Architectures:
         - x86_64
       Environment: # More info about Env Vars: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#environment-object
         Variables:
           SNS_TOPICS_ARN: !Ref SNSTopicsARN
+          WAF_FUNCTION_ARN: !GetAtt WafFunction.Arn
+          GUARDDUTY_FUNCTION_ARN: !GetAtt GuarddutyFunction.Arn
+          INSPECTOR_FUNCTION_ARN: !GetAtt InspectorFunction.Arn
+          IOTSECURITY_FUNCTION_ARN: !GetAtt IoTSecurityFunction.Arn
       Events:
         SecurityReports:
           Type: Schedule
           Properties:
-            Schedule: cron(0 1 * * ? *)
+            Schedule: cron(0 1 ? * 2 *)
             Name: SecurityReports
             Description: Schedule to generate daily reports
             Enabled: True
             Input:
               '{
-                "report_type": "waf",
-                "report_period": "daily"
+                "security_service": ["waf", "guardduty", "inspector","iotsecurity"],
+                "report_period": "weekly"
               }'
       Policies:
         - Statement:
@@ -241,7 +313,7 @@ Resources:
               - bedrock:InvokeModel
               - bedrock:InvokeModelWithResponseStream
             Resource:
-              - arn:aws:bedrock:*::foundation-model/*
+              - !Sub arn:${AWS::Partition}:bedrock:*::foundation-model/*
           - Sid: SNSPolicy
             Effect: Allow
             Action:
@@ -255,13 +327,16 @@ Resources:
               - dynamodb:PutItem
             Resource:
               - !Sub arn:${AWS::Partition}:dynamodb:${AWS::Region}:${AWS::AccountId}:table/SecurityReportsTable
+          - Sid: LambdaInvokePolicy
+            Effect: Allow
+            Action:
+              - lambda:InvokeFunction
+            Resource:
+              - !Sub arn:${AWS::Partition}:lambda:${AWS::Region}:${AWS::AccountId}:function:*
   SecurityReportsTable:
     Type: AWS::Serverless::SimpleTable
     Properties:
       TableName: SecurityReportsTable
-      PrimaryKey: 
-        Name: report_type
-        Type: String
       Tags:
         APP: OpsAssistant
         ENV: PROD

@@ -1,4 +1,9 @@
 {
-  "report_type": "waf",
-  "report_period": "daily"
+  "security_service": [
+    "waf",
+    "guardduty",
+    "inspector",
+    "iotsecurity"
+  ],
+  "report_period": "weekly"
 }

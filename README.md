@@ -7,11 +7,11 @@ Supported services:
 - WAF logs
 - GuardDuty findings
 - Inspector findings
-- Daily/Weekly/Monthly security reports
 - IoT Device Defender
+- Daily/Weekly/Monthly security reports
+- Athena (Text to SQL))(in progress)
 - CloudTrail (in progress)
 - Code review(in progress)
-- Document review(in progress)
 
 More service data retriveling is on going.
 
@@ -29,6 +29,7 @@ This project contains source code and supporting files for a serverless applicat
 ├── assets
 │   └── images
 ├── code                # Code for the application's Lambda function.
+│   ├── athena      	# Text to SQL query
 │   ├── authorizer      # API Gateway Token authorizer
 │   ├── cloudtrail
 │   ├── ec2

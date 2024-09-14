@@ -46,21 +46,22 @@ def lambda_handler(event, context):
 
     # get query status
     while True:
-        try:
-            # This function only loads the first 1000 rows
-            athena_client.get_query_results(
-                QueryExecutionId=query_id
-            )
+        query_execution = athena_client.get_query_execution(
+            QueryExecutionId=query_id
+        )
+        query_status = query_execution['QueryExecution']['Status']['State']
+        print(query_status)
+        if query_status in ['QUEUED', 'RUNNING']:
+            print(f"The query status '{query_status}' is not finished.")
+            time.sleep(0.01)
+        else:
+            print(f"The query status '{query_status}' is finished.")
             break
-        except Exception as err:
-            if "not yet finished" in str(err):
-                time.sleep(0.01)
-            else:
-                raise err
 
     results = []
 
     # Create a reusable Paginator
+    # get_query_results only loads the first 1000 rows
     paginator = athena_client.get_paginator('get_query_results')
 
     # Create a PageIterator from the Paginator
@@ -121,10 +122,9 @@ def text2sql(query):
 
         # print(response['output'])
         # print(response['usage'])
+        print(f"Finished generating text by using converse API with model {model_id}.")
+        return response['output']['message']['content'][0]['text']
     except ClientError as err:
         message = err.response['Error']['Message']
         print(f"A client error occured: {message}")
-    else:
-        print(f"Finished generating text by using converse API with model {model_id}.")
-        return response['output']['message']['content'][0]['text']
-    return query
+        return "False"
