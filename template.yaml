@@ -238,9 +238,6 @@ Resources:
         Variables:
           ATHENA_WORKGROUP: !Ref AthenaWorkgroup
       Policies:
-        - AthenaQueryPolicy:
-            WorkGroupName:
-              !Ref AthenaWorkgroup
         - Statement:
           - Sid: BedrockPolicy
             Effect: Allow
@@ -249,7 +246,13 @@ Resources:
               - bedrock:InvokeModelWithResponseStream
             Resource:
               - !Sub arn:${AWS::Partition}:bedrock:*::foundation-model/*
-        - Statement:
+          - Sid: AthenaPolicy
+            Effect: Allow
+            Action:
+              - athena:GetQueryResults
+              - athena:StartQueryExecution
+              - athena:GetQueryExecution
+            Resource: "*"
           - Sid: S3Policy
             Effect: Allow
             Action:
@@ -260,7 +263,6 @@ Resources:
               - s3:PutObjectTagging
               - s3:GetObjectTagging
             Resource: "*"
-        - Statement:
           - Sid: GluePolicy
             Effect: Allow
             Action:
@@ -269,7 +271,6 @@ Resources:
               - glue:GetDatabases
               - glue:GetDatabase
             Resource: "*"
-        - Statement:
           - Sid: KMSPolicy
             Effect: Allow
             Action:

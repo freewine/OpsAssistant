@@ -53,7 +53,7 @@ def lambda_handler(event, context):
         print(query_status)
         if query_status in ['QUEUED', 'RUNNING']:
             print(f"The query status '{query_status}' is not finished.")
-            time.sleep(0.01)
+            time.sleep(0.1)
         else:
             print(f"The query status '{query_status}' is finished.")
             break
