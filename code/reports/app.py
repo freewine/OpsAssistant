@@ -14,26 +14,28 @@ lambda_client = boto3.client('lambda')
 # 读取环境变量
 sns_topic_arn = os.environ.get('SNS_TOPICS_ARN')
 # 模型id
-model_id = "anthropic.claude-3-5-sonnet-20240620-v1:0"
+model_id = "anthropic.claude-3-5-sonnet-20241022-v2:0"
+
 # ddb表, 读写容量按需
 report_table_name = 'SecurityReportsTable'
 
 def lambda_handler(event, context):
     print(f"event: {event}")
     # daily, weekly, monthly
-    report_period = event["report_period"] or 'daily' 
+    report_period = event.get("report_period", 'daily')
     # waf, guardduty, inspector, IoT device defender
-    security_service = event["security_service"] or ['waf'] 
-    result = generate_report(security_service, report_period)
+    security_services = event.get("security_service", ['waf'])
     
-    print(security_service)
+    result = generate_reports(security_services, report_period)
+    
+    print(f"Generated reports for services: {security_services}")
 
     return {
         'statusCode': 200,
         'body': json.dumps(result)
     }
 
-def generate_report(security_service, report_period):
+def generate_reports(security_services, report_period):
     # 获取当前日期，格式%Y-%m-%d %H:%M:%S
     current_date = datetime.now(tz=timezone.utc)
     if report_period == 'daily': # 前一天起止时间
@@ -58,9 +60,12 @@ def generate_report(security_service, report_period):
         print('report_period error')
         return 'report_period error'
         
+    date_str = start_date.strftime('%Y-%m-%d')
     print('start_date: %s, end_date: %s' %(start_date.strftime('%Y-%m-%d %H:%M:%S'), end_date.strftime('%Y-%m-%d %H:%M:%S')))
 
-    for service in security_service:
+    results = []
+    reports = []
+    for service in security_services:
         if service == 'waf':
             lambda_arn = os.environ.get('WAF_FUNCTION_ARN')
         elif service == 'guardduty':
@@ -70,8 +75,8 @@ def generate_report(security_service, report_period):
         elif service == 'iotsecurity':
             lambda_arn = os.environ.get('IOTSECURITY_FUNCTION_ARN')
         else:
-            print('security_service error')
-            return 'security_service error'
+            print(f'Unsupported security service: {service}')
+            continue
         
         params = {
             "body": json.dumps({
@@ -93,27 +98,38 @@ def generate_report(security_service, report_period):
         # Print the response payload
         payload = json.loads(response['Payload'].read())
 
-        report_response = generate_conversation(payload.get('body'))
+        report_response = get_insight(payload.get('body'))
         report = report_response['message']['content'][0]['text']
-        date_str = start_date.strftime('%Y-%m-%d')
+        reports.append(report)
         save_report(service, report_period, date_str, report)
         send_report(service, report_period, date_str, report)
-    
-    return 'Done!'
+        results.append(f"{service} report generated and sent")
 
-# bedrock claude3 converse API
-def generate_conversation(logs):
+    # get reports length
+    if len(reports) > 1:
+        summary = summary_reports(reports)['message']['content'][0]['text']
+        send_report("Comprehensive", report_period, date_str, summary)
+    else:
+        send_report(service, report_period, date_str, report)
+    
+    return ' | '.join(results)
+
+
+#  summary all the reports
+def summary_reports(reports):
     # Open the file in read mode
-    with open('report.prompt', 'r') as file:
+    with open('summary-reports.prompt', 'r') as file:
         # Read the entire contents of the file
         template = file.read()
 
-    system_text = template.format(logs=logs)
+    system_text = template.format(reports=reports)
     system_prompts = [{"text" : system_text}]
+
+    print(system_prompts)
 
     # Inference parameters to use.
     temperature = 0.5
-    top_k = 200
+    top_k = 20
 
     #Base inference parameters to use.
     inference_config = {"temperature": temperature}
@@ -142,6 +158,54 @@ def generate_conversation(logs):
     except ClientError as err:
         message = err.response['Error']['Message']
         print(f"A client error occured: {message}")
+        return err.response['Error']['Message']
+    else:
+        print(f"Finished generating text by using converse API with model {model_id}.")
+        return response['output']
+
+
+# bedrock claude3 converse API
+def get_insight(logs):
+    # Open the file in read mode
+    with open('report.prompt', 'r') as file:
+        # Read the entire contents of the file
+        template = file.read()
+
+    system_text = template.format(logs=logs)
+    system_prompts = [{"text" : system_text}]
+
+    # Inference parameters to use.
+    temperature = 0.5
+    top_k = 20
+
+    #Base inference parameters to use.
+    inference_config = {"temperature": temperature}
+    # Additional inference parameters to use.
+    additional_model_fields = {"top_k": top_k}
+   
+    messages = [{
+        "role": "user",
+        "content": [{"text": "Generate reposts:"}]
+    },
+    ]
+
+    try:
+        # Send the message.
+        response = bedrock_client.converse(
+            modelId=model_id,
+            messages=messages,
+            system=system_prompts,
+            inferenceConfig=inference_config,
+            additionalModelRequestFields=additional_model_fields,
+            #toolConfig=tool_config
+        )
+
+        # print(response['output'])
+        # print(response['usage'])
+    except ClientError as err:
+        message = err.response['Error']['Message']
+        print(f"A client error occured: {message}")
+        return err.response['Error']['Message']
     else:
         print(f"Finished generating text by using converse API with model {model_id}.")
         return response['output']

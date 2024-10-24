@@ -297,7 +297,7 @@ Resources:
         SecurityReports:
           Type: Schedule
           Properties:
-            Schedule: cron(0 1 ? * 2 *)
+            Schedule: cron(0 0 ? * 2 *)
             Name: SecurityReports
             Description: Schedule to generate daily reports
             Enabled: True

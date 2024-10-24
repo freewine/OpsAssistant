@@ -11,6 +11,33 @@ waf_log_region =  os.environ["WAF_LOG_REGION"] or 'us-east-1'
 # 创建 CloudWatch Logs 客户端
 logs_client = boto3.client('logs', region_name=waf_log_region)
 
+top_ip = '''fields httpRequest.clientIp
+| stats count(*) as requestCount by httpRequest.clientIp
+| sort requestCount desc
+| limit 100
+'''
+top_country = '''fields httpRequest.country
+| stats count(*) as requestCount by httpRequest.country
+| sort requestCount desc
+| limit 100
+'''
+top_user_agent = '''fields @timestamp, @message
+| parse @message '{"name":"User-Agent","value":"*"}' as userAgent
+| stats count(*) as requestCount by userAgent
+| sort requestCount desc
+| limit 100
+'''
+top_host = '''fields @timestamp, @message
+| parse @message '{"name":"Host","value":"*"}' as host
+| stats count(*) as requestCount by host
+| sort requestCount desc
+| limit 100
+'''
+top_terminatingRuleId = '''fields terminatingRuleId
+| stats count(*) as requestCount by terminatingRuleId
+| sort requestCount desc
+| limit 100'''
+
 def lambda_handler(event, context):
     print(f"event: {event}")
     parameters = json.loads(event["body"])

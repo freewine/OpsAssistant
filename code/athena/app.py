@@ -6,7 +6,7 @@ from botocore.exceptions import ClientError
 athena_client = boto3.client('athena')
 bedrock_client = boto3.client('bedrock-runtime')
 # 模型id
-model_id = "anthropic.claude-3-5-sonnet-20240620-v1:0"
+model_id = "anthropic.claude-3-5-sonnet-20241022-v2:0"
 
 workgroup = os.environ["ATHENA_WORKGROUP"]
 
