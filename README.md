@@ -117,6 +117,11 @@ OpsAssistant$ curl --location 'http://localhost:3000/tools/waf' --header 'Conten
 OpsAssistant$ curl --location 'http://localhost:3000/tools/guardduty' --header 'Content-Type: application/json' --data @events/guardduty_event.json
 OpsAssistant$ curl --location 'http://localhost:3000/tools/inspector' --header 'Content-Type: application/json' --data @events/inspector_event.json
 OpsAssistant$ curl --location 'http://localhost:3000/tools/iotsecurity' --header 'Content-Type: application/json' --data @events/iot_security_event.json
+
+curl --location 'http://localhost:3000/tools/waf' \
+--header 'Content-Type: application/json' \
+--header 'Authorization: Bearer <AuthToken>' \
+--data @events/waf_event.json
 ```
 
 Run functions locally and invoke them with the `sam local invoke` command.

@@ -20,14 +20,127 @@
           "content": {
             "application/json": {
               "schema": {
-                "$ref": "#/components/schemas/Payload"
+                "title": "API request payload",
+                "type": "object",
+                "properties": {
+                  "start_time": {
+                    "type": "string",
+                    "format": "date-time",
+                    "example": "2024-06-23 00:00:00",
+                    "description": "Start time for log analysis"
+                  },
+                  "end_time": {
+                    "type": "string",
+                    "format": "date-time",
+                    "example": "2024-06-24 23:59:59",
+                    "description": "End time for log analysis"
+                  },
+                  "analysis_type": {
+                    "type": "string",
+                    "description": "Type of WAF log analysis to perform",
+                    "default": "raw_logs",
+                    "enum": [
+                      "raw_log",
+                      "top_ip",
+                      "top_country",
+                      "top_host",
+                      "top_terminatingRuleId",
+                      "XSS_or_SQL_injection",
+                      "top_user_agent",
+                      "top_counted_user_agent",
+                      "invalid_captcha",
+                      "blocked_request"
+                    ]
+                  },
+                  "limit": {
+                    "type": "integer",
+                    "description": "Maximum number of results to return",
+                    "default": 100,
+                    "minimum": 1
+                  }
+                },
+                "required": [
+                  "start_time",
+                  "end_time",
+                  "analysis_type"
+                ]
               }
             }
           }
         },
         "responses": {
           "200": {
-            "description": "Successfully processed"
+            "description": "Successfully processed",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "analysis_type": {
+                      "type": "string",
+                      "description": "Type of analysis performed"
+                    },
+                    "start_time": {
+                      "type": "string",
+                      "format": "date-time",
+                      "description": "Start time of the analysis"
+                    },
+                    "end_time": {
+                      "type": "string",
+                      "format": "date-time",
+                      "description": "End time of the analysis"
+                    },
+                    "results": {
+                      "type": "array",
+                      "description": "Analysis results",
+                      "items": {
+                        "type": "object"
+                      }
+                    },
+                    "result_count": {
+                      "type": "integer",
+                      "description": "Number of results returned"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "string",
+                      "description": "Error message"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Internal server error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": {
+                      "type": "string",
+                      "description": "Error message"
+                    },
+                    "details": {
+                      "type": "string",
+                      "description": "Detailed error information"
+                    }
+                  }
+                }
+              }
+            }
           }
         }
       }
