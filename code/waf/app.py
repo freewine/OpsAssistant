@@ -63,7 +63,7 @@ def get_top_hosts(start_time, end_time, limit=100):
     """Get top hosts by request count"""
     query = f"""
     fields @timestamp, @message
-    | parse @message '{"name":"Host","value":"*"}' as host
+    | parse @message '{{"name":"Host","value":"*"}}' as host
     | stats count(*) as requestCount by host
     | sort requestCount desc
     | limit {limit}
@@ -95,7 +95,7 @@ def get_top_user_agents(start_time, end_time, limit=100):
     """Get top User-Agents"""
     query = f"""
     fields @timestamp, @message
-    | parse @message '{"name":"User-Agent","value":"*"}' as userAgent
+    | parse @message '{{"name":"User-Agent","value":"*"}}' as userAgent
     | stats count(*) as requestCount by userAgent
     | sort requestCount desc
     | limit {limit}
@@ -136,6 +136,7 @@ def get_blocked_requests(start_time, end_time, limit=100):
     return execute_query(start_time, end_time, query)
 
 def format_results(response):
+    print(response)
     """Format query results into a consistent structure"""
     if not response.get('results'):
         return []
@@ -173,11 +174,11 @@ def lambda_handler(event, context):
             }
 
         # Execute requested analysis
-        analysis_type = parameters['analysis_type']
-        limit = parameters.get('limit', 100)
+        analysis_type = parameters['analysis_type'] or 'raw'
+        limit = parameters.get('limit', 200)
 
         analysis_functions = {
-            'raw_log': lambda: get_raw_logs(start_time, end_time, limit),
+            'raw': lambda: get_raw_logs(start_time, end_time, min(limit, 200)), 
             'top_ip': lambda: get_top_ip_addresses(start_time, end_time, limit),
             'top_country': lambda: get_top_countries(start_time, end_time, limit),
             'top_host': lambda: get_top_hosts(start_time, end_time, limit),

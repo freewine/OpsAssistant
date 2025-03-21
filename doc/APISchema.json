@@ -2,7 +2,7 @@
   "openapi": "3.1.0",
   "info": {
     "title": "APIs for retrieving AWS services logs or findings",
-    "description": "Retrieve AWS services logs or findings, such as GuardDuty findings, Inspector findings, IoT Device Defender Audit findings, etc.",
+    "description": "Retrieve AWS services logs or findings, such as WAF logs, GuardDuty findings, Inspector findings, IoT Device Defender Audit findings, etc.",
     "version": "v1.0.0"
   },
   "servers": [
@@ -37,10 +37,10 @@
                   },
                   "analysis_type": {
                     "type": "string",
-                    "description": "Type of WAF log analysis to perform",
-                    "default": "raw_logs",
+                    "description": "Type for WAF log analysis. The type MUST be in enum. Default 'raw' ",
+                    "default": "raw",
                     "enum": [
-                      "raw_log",
+                      "raw",
                       "top_ip",
                       "top_country",
                       "top_host",
@@ -54,7 +54,7 @@
                   },
                   "limit": {
                     "type": "integer",
-                    "description": "Maximum number of results to return",
+                    "description": "Maximum number of results, default 100",
                     "default": 100,
                     "minimum": 1
                   }
