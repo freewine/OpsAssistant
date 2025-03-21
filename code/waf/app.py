@@ -136,7 +136,7 @@ def get_blocked_requests(start_time, end_time, limit=100):
     return execute_query(start_time, end_time, query)
 
 def format_results(response):
-    print(response)
+    # print(response)
     """Format query results into a consistent structure"""
     if not response.get('results'):
         return []
