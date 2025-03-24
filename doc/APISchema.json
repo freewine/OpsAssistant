@@ -37,12 +37,12 @@
                   },
                   "analysis_type": {
                     "type": "string",
-                    "description": "Type for WAF log analysis. The type MUST be in enum. Default 'raw' ",
+                    "description": "Type for WAF log analysis. Default 'raw'. Options are:\n- raw: Return raw WAF logs\n- top_ip: Return top source IPs with request counts\n- top_country: Return top source countries with request counts\n- top_host: Return top host headers with request counts\n- top_terminatingRuleId: Return top terminating rule IDs with request counts\n- XSS_or_SQL_injection: Return requests with XSS or SQL injection attempts\n- top_user_agent: Return top user agents with request counts\n- top_counted_user_agent: Return top user agents with unique IP counts\n- invalid_captcha: Return requests with invalid CAPTCHA responses\n- blocked_request: Return requests that were blocked by WAF rules",
                     "default": "raw",
                     "enum": [
-                      "raw",
+                      "raw", 
                       "top_ip",
-                      "top_country",
+                      "top_country", 
                       "top_host",
                       "top_terminatingRuleId",
                       "XSS_or_SQL_injection",
